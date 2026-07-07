@@ -1,0 +1,12 @@
+{
+  "name": "saga-icm",
+  "version": "3.0.0",
+  "description": "Portable, token-efficient novel engineering system using Interpretable Context Methodology and Open Knowledge Format",
+  "type": "module",
+  "bin": {
+    "saga": "./scripts/saga.js"
+  },
+  "author": "Richard Elder & Antigravity",
+  "license": "MIT",
+  "dependencies": {}
+}
