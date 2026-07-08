@@ -19,7 +19,7 @@ last_modified: [YYYY-MM-DD]
 - **Target length / chapter count** (from genre bible):
 
 ## Engine
-- **Protagonist:** wants [external object of desire] · needs [internal] · wound [___]
+- **Protagonist:** wants [external object of desire] · needs [internal] · wound [___] · **arc type** [positive change / flat / disillusionment / corruption]
 - **Antagonistic force:** [___] · what it wants [___]
 - **Stakes if the protagonist fails:**
 - **Controlling idea (theme, one sentence — cause and effect):** [e.g., "Survival is earned when trust beats protocol."]

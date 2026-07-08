@@ -10,11 +10,13 @@ outputs:
   - stages/01_onboarding/output/bible/world_bible.md
   - stages/01_onboarding/output/bible/genre_bible.md
   - stages/01_onboarding/output/characters/
+templates:
+  - _config/templates/character.template.md
 ---
 
 # Stage 01: Onboarding Context
 
-Two execution paths produce **identical artifacts**. Path A is preferred whenever an agent harness (Claude Code, Codex, Antigravity, …) is present; Path B is the fallback for terminal-only or headless use.
+Three execution paths produce **identical artifacts**. Path A is preferred whenever an agent harness (Claude Code, Codex, Antigravity, …) is present; Path B is the fallback for terminal-only or headless use; Path C applies whenever the author arrives with existing material — which is often.
 
 ## Path A — Agent-led interview (no API key required)
 1. Load the active questionnaire blueprint from `setup/` (default: `comfort_scifi_blueprint.md`; honor the user's choice of any other blueprint).
@@ -25,6 +27,14 @@ Two execution paths produce **identical artifacts**. Path A is preferred wheneve
 ## Path B — Terminal wizard (needs a model backend in `.env`)
 1. Run `node scripts/saga.js wizard onboard [--blueprint=<name>]`.
 2. The wizard asks the same questions via readline, coaches via the configured model, and writes the same artifacts (steps 3–4 of Path A still apply if run inside an agent session afterward).
+
+## Path C — Intake of existing material (agent-led)
+Authors rarely arrive empty-handed: a synopsis, a foolscap, character sheets, a pinboard of notes, even drafted chapters. The artifacts are the contract; the interview is only one route to them.
+1. **Inventory** everything provided. For each piece, identify which pipeline artifact(s) it feeds (synopsis → world bible + foolscap; character notes → character profiles; a draft chapter → chapter + canon facts + voice exemplars).
+2. **Normalize, don't paraphrase away.** Move content into the standard artifact formats, preserving the author's own wording wherever it carries voice or specificity. Note provenance (`source: author's original synopsis`) in frontmatter.
+3. **Diff against required fields** (blueprint questions, genre-bible `[FIELD]`s, character template). Interview ONLY the gaps — never re-ask what the material already answers; confirm inferences instead ("your notes imply first person past — correct?").
+4. **If drafts exist:** register them in `manuscript.json` as `status: drafted`, harvest hard facts into `canon.md` tagged `[unverified chN]`, reverse-engineer their beat sheets, and queue them for the full Stage 04 audit. Existing prose is input, never exempt.
+5. Present the normalized artifact set to the author for confirmation before Stage 02.
 
 ## Trope Discovery (both paths, agent-led)
 1. Open `setup/genre_bibles/INDEX.md`; select the genre bible matching the project (or the nearest chassis, adapted).
@@ -45,4 +55,4 @@ Two execution paths produce **identical artifacts**. Path A is preferred wheneve
    ```
 2. **`output/bible/world_bible.md`** — frontmatter `type: WorldBible`, `genre`, `focus`, `last_modified`; body = the approved synthesis grouped into: Core Tech & World Rules · Setting & Aesthetic · Character Dynamics · Central Emergency & Stakes.
 3. **`output/bible/genre_bible.md`** — the chosen genre bible template with every `[FIELD]` filled.
-4. **`output/characters/<name>.md`** (one per lead) — frontmatter `type: CharacterProfile`, `name`, `role`, `discipline`, `flaw`, `status: Seeded`; body may include voice notes and 2–3 sample lines of that character's dialogue register.
+4. **`output/characters/<name>.md`** (one per significant character) — from `_config/templates/character.template.md`: role, **arc_type** (positive change / flat / disillusionment / corruption / static), the arc engine (want / need / wound / lie / truth), introduction mode, voice register + sample lines. During the interview, listen for arc raw material — the wound and the lie usually surface in answers about flaws and blindspots; capture them in the character's own fields, and let Stage 02's Character Arc Pass make the arc-type call with the author.

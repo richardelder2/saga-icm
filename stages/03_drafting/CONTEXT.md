@@ -5,6 +5,7 @@ name: Sensory Drafting
 inputs:
   - stages/02_planning/output/beats/
   - stages/02_planning/output/structure_plan.md
+  - stages/02_planning/output/character_arcs.md
   - stages/02_planning/output/canon.md
   - stages/02_planning/output/voice_exemplars.md
   - manuscript.json
@@ -19,6 +20,7 @@ outputs:
 ## Process
 1. **Load the chapter kit** for the target chapter (the next `status: planned` entry in `manuscript.json`, unless the user names one):
    - Its beat sheet from `stages/02_planning/output/beats/` and its `structure_plan.md` entries (escalation value, anachrony, subplot touchpoints, ledgered obligatory scenes).
+   - Its **arc beats** from `character_arcs.md`: which characters' interior beats land in this chapter and what each must show. Arc beats surface through choice, behavior, and image — never through the narrator naming the lie, the truth, or the lesson.
    - **Canon** (`stages/02_planning/output/canon.md`): every fact drafted must agree with it — names/spellings, world rules, object states, numbers, timeline, who-knows-what.
    - **Voice kit** (anti-drift, mandatory): `voice_exemplars.md` PLUS the final ~500 words of the previous chapter's draft. Calibrate to these before writing a word; they are targets, not text to copy.
 2. Generate active, sensory prose following the beats, the style guide (`_config/voice.md`), and **Layer 2 (prose rules) of `_config/narrative_authenticity.md`**. In particular:

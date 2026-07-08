@@ -22,8 +22,9 @@ last_modified: [YYYY-MM-DD]
 - **Head fake:**
 - **Rehook (chapter-end pull):**
 
-## Structural dials for this chapter (from structure_plan.md)
+## Structural dials for this chapter (from structure_plan.md / character_arcs.md)
 - **Obligatory-scene ledger entries due here:** [ids or "none"]
+- **Character-arc beats due here:** [character + beat # + what it must show, or "none"]
 - **Subplot touchpoints:** [which subplot, what advances]
 - **Anachrony assignment:** [flashback / skip / none — what it delays]
 - **Opening type:** [dialogue / motion / thought / scene-set — vary vs. neighbors]

@@ -29,6 +29,14 @@ Stages 01–02 run once per book. Chapters then cycle 03 → 04 until passed:
 
 Keep `manuscript.json` truthful — it is the shared state that lets any agent resume the project cold.
 
+## Meet the author where they are (intake & nonlinear work)
+
+Novels are messy and authors don't work in stage order. The stages are **artifact gates, not a rail** — the contracts define what must exist and agree, never the sequence the human must follow.
+
+- **Arriving with material** (synopsis, foolscap, character sheets, drafted chapters): run Stage 01 **Path C intake** — inventory, normalize into the standard artifacts preserving the author's wording, interview only the gaps, register existing drafts in `manuscript.json` and harvest their canon facts. Never re-ask what the material already answers.
+- **Jumping around** (drafts chapter 12 first, redesigns a character mid-book, wants to write the climax today): allow it. Backfill the missing upstream artifacts by **reverse-engineering them from what exists** (a draft implies its beat sheet; chapters imply a foolscap), then reconcile — divergence between artifacts is resolved deliberately, with the author, never silently. Log ripple effects: a mid-book character change is a canon amendment with a retrofit list.
+- **What keeps this safe:** `manuscript.json` + `canon.md` + `structure_plan.md` are the ground truth of project state; `saga status` shows the holes; the stage packet's missing-input report is a to-do list, not an error. Out-of-order work raises the Stage 04 burden (more to verify), but the gate is unchanged: nothing compiles until it passes.
+
 ## Agent-led onboarding (no API key needed)
 
 When the user asks to start a new novel/project, DO NOT tell them to run the terminal wizard — run the interview yourself in chat, per `stages/01_onboarding/CONTEXT.md` Path A: ask the blueprint questions one at a time, play the encouraging domain-expert coach between answers, then perform trope discovery from `setup/genre_bibles/INDEX.md` and write the exact output artifacts the contract specifies. The terminal wizard (`node scripts/saga.js wizard onboard`) is the fallback for users working outside an agent harness.
