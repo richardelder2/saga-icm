@@ -44,6 +44,8 @@ node scripts/saga.js compile      # build HTML/EPUB from passed chapters
 
 Books are produced chapter-by-chapter: Stage 02 writes a `manuscript.json` production ledger; each chapter cycles draft (03) → audit (04) → passed, with a living **canon** file guarding continuity and a **voice-exemplar kit** preventing style drift between sessions; `compile` (05) builds only gated chapters.
 
+**Multiple projects:** one book = one `init`-scaffolded folder; projects are fully isolated. **Series** share a sibling `series/` folder (series canon, filled genre bible, cross-book trackers) — conventions in `AGENTS.md`. **Upgrading** a project to a newer template: re-run `init` from inside it — outputs, `manuscript.json`, and `.env` are preserved.
+
 ## The authenticity system (what makes this different)
 
 Most "make it sound less AI" advice targets word choice. Research on AI fiction detection (StoryScope, arXiv:2604.03136) shows that's only half the problem: AI stories remain detectable at ~94% accuracy from **narrative structure alone** — explained themes, tidy single-track plots, linear time, uniform resolutions — even after professional style editing. Structure has to be fixed where it's created: at the outline.

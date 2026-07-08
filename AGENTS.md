@@ -37,6 +37,29 @@ Novels are messy and authors don't work in stage order. The stages are **artifac
 - **Jumping around** (drafts chapter 12 first, redesigns a character mid-book, wants to write the climax today): allow it. Backfill the missing upstream artifacts by **reverse-engineering them from what exists** (a draft implies its beat sheet; chapters imply a foolscap), then reconcile — divergence between artifacts is resolved deliberately, with the author, never silently. Log ripple effects: a mid-book character change is a canon amendment with a retrofit list.
 - **What keeps this safe:** `manuscript.json` + `canon.md` + `structure_plan.md` are the ground truth of project state; `saga status` shows the holes; the stage packet's missing-input report is a to-do list, not an error. Out-of-order work raises the Stage 04 burden (more to verify), but the gate is unchanged: nothing compiles until it passes.
 
+## Multiple projects & series
+
+**One book = one workspace folder** (created by `saga init`). Projects are fully self-contained — all state is cwd-relative, so parallel projects cannot contaminate each other. On entering any project cold, run `saga status` first.
+
+**Series** (multiple books sharing a world, cast, and trope trackers) use a sibling `series/` folder as the shared layer:
+
+```
+my-series/
+  series/            ← shared, read-mostly: filled genre bible, series_canon.md,
+  │                     cross-book trackers (heat ladder, lore-debt ledger, romance
+  │                     ladder, town/village bible), series arc map
+  book-01/           ← normal saga init workspace
+  book-02/
+```
+
+Rules for series work:
+- Book-level artifacts (manuscript.json, structure_plan, per-book canon) stay in the book folder; facts and trackers that outlive one book get **promoted to `series/`** when a book completes Stage 04 (new canon → `series/series_canon.md`; ladder/ledger movements → the shared trackers).
+- Stage 01 for book N+1 starts by reading `series/` — the genre bible is already filled; only the per-book fields (this book's couple/case/trial ladder) get interviewed.
+- Book drafting treats `series/series_canon.md` exactly like local canon: draft loses conflicts; amendments are deliberate and logged with a retrofit list (which may span published books — flag those to the author, they may be unfixable and must constrain the new book instead).
+- The genre bibles' series trackers ("never reuse a motive-mechanism pair within 5 books", "one romance-ladder rung per 1–2 books") are audited at Stage 02 of each new book, not just Stage 04.
+
+**Upgrading a project** to a newer template version: re-run `node <template>/scripts/saga.js init` from inside the project folder. Verified safe: it refreshes `scripts/`, `_config/`, stage contracts, and docs while preserving `manuscript.json`, `.env`, and every `output/` directory. Caveat: locally customized stage contracts or config files are overwritten — diff before/after (`git diff`) if the project is under git, which it should be.
+
 ## Agent-led onboarding (no API key needed)
 
 When the user asks to start a new novel/project, DO NOT tell them to run the terminal wizard — run the interview yourself in chat, per `stages/01_onboarding/CONTEXT.md` Path A: ask the blueprint questions one at a time, play the encouraging domain-expert coach between answers, then perform trope discovery from `setup/genre_bibles/INDEX.md` and write the exact output artifacts the contract specifies. The terminal wizard (`node scripts/saga.js wizard onboard`) is the fallback for users working outside an agent harness.
