@@ -7,10 +7,10 @@ A portable, token-efficient system for writing novels with AI co-authors, built 
 | Stage | Folder | Produces |
 |---|---|---|
 | 1. Onboarding | `stages/01_onboarding/` | preferences, world bible, character seeds, **filled genre bible + trope stack** |
-| 2. Planning | `stages/02_planning/` | **foolscap page**, outline, **structure plan** (incl. obligatory-scene ledger), continuity trackers, scene beats |
-| 3. Drafting | `stages/03_drafting/` | chapter prose |
-| 4. Diagnostics & Edits | `stages/04_diagnostics_edits/` | audit reports, revision playbooks |
-| 5. Publishing | `stages/05_publishing/` | HTML / EPUB manuscript |
+| 2. Planning | `stages/02_planning/` | **foolscap page**, outline, **structure plan**, canon + voice exemplars, **manuscript.json production ledger**, scene beats |
+| 3. Drafting | `stages/03_drafting/` | chapter prose (canon-consistent, voice-calibrated) |
+| 4. Diagnostics & Edits | `stages/04_diagnostics_edits/` | audit + continuity reports, revision playbooks, the pass gate |
+| 5. Publishing | `stages/05_publishing/` | HTML / EPUB manuscript (`saga compile`, gated on passed chapters) |
 
 Each stage has a `CONTEXT.md` contract declaring its inputs, outputs, and process, with output skeletons in `_config/templates/` so every executor produces identical artifacts. Planning starts from a **foolscap page** (Story Grid / Pressfield): the whole book on one sheet before any outline exists.
 
@@ -36,9 +36,13 @@ Then, **with an agent**: say *"read AGENTS.md and onboard me for a new novel"* �
 **Without an agent** (terminal + API backend in `.env`):
 ```bash
 node scripts/saga.js wizard onboard --blueprint=comfort-scifi
-node scripts/saga.js status        # progress anytime
-node scripts/saga.js audit         # scan drafts for AI prose tells
+node scripts/saga.js status        # stage + chapter progress, next action
+node scripts/saga.js audit        # scan drafts for AI prose tells
+node scripts/saga.js continuity   # name-consistency scan across chapters
+node scripts/saga.js compile      # build HTML/EPUB from passed chapters
 ```
+
+Books are produced chapter-by-chapter: Stage 02 writes a `manuscript.json` production ledger; each chapter cycles draft (03) → audit (04) → passed, with a living **canon** file guarding continuity and a **voice-exemplar kit** preventing style drift between sessions; `compile` (05) builds only gated chapters.
 
 ## The authenticity system (what makes this different)
 

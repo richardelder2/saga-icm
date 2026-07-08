@@ -288,6 +288,8 @@ export function runAudit(targets) {
     summary.push({ name, reds, warns, words: r.words });
   }
 
+  updateManifest(summary);
+
   const summaryMd = [
     '# Narrative Audit Summary', '',
     `Generated: ${new Date().toISOString()}`, '',
@@ -298,6 +300,33 @@ export function runAudit(targets) {
   fs.writeFileSync(path.join(REPORT_DIR, 'audit_summary.md'), summaryMd, 'utf8');
   console.log(`\nSummary written to ${path.join(REPORT_DIR, 'audit_summary.md')}`);
   console.log('Reminder: this scanner covers prose tells only. Structural tells require the rubric audit.');
+}
+
+// If a manuscript.json production ledger exists, record each chapter's scan verdict
+// (matched by draft_file basename). Statuses are owned by the stage contracts; only last_audit is written here.
+function updateManifest(summary) {
+  if (!fs.existsSync('manuscript.json')) return;
+  try {
+    const manifest = JSON.parse(fs.readFileSync('manuscript.json', 'utf8'));
+    if (!Array.isArray(manifest.chapters)) return;
+    let touched = 0;
+    for (const s of summary) {
+      const ch = manifest.chapters.find(c => {
+        const base = path.basename(c.draft_file || '').replace(/\.(md|txt|markdown)$/i, '');
+        return base && base === s.name;
+      });
+      if (ch) {
+        ch.last_audit = s.reds > 0 ? 'FAIL' : s.warns > 0 ? 'REVIEW' : 'CLEAN';
+        touched++;
+      }
+    }
+    if (touched > 0) {
+      fs.writeFileSync('manuscript.json', JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+      console.log(`Updated last_audit for ${touched} chapter(s) in manuscript.json.`);
+    }
+  } catch (e) {
+    console.error(`Could not update manuscript.json: ${e.message}`);
+  }
 }
 
 // Run directly (not imported)

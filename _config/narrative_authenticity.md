@@ -53,6 +53,11 @@ These are **dials, not switches**. Every rule below is a statistical tendency in
 - Plot event intensity must have a deliberate, uneven contour: quiet chapters, spikes, false peaks. Flat, evenly-rising escalation is a machine signature.
 - Endings may be avalanches. Not everything winds down gently.
 
+### Rarity — beat the default
+- The research's deepest finding: AI stories cluster in a shared region of narrative space; human stories are statistically *rarer* (mean rarity percentile 0.71 vs 0.49) and more dispersed. The first idea a model produces is, almost by definition, the center of that cluster.
+- Rule for every major beat (act turns, midpoint, arc climaxes, endings): generate **three candidate approaches, discard the first as the presumed default**, and pick the rarest that still serves the story. Log default vs. chosen in `structure_plan.md` §10.
+- Obligatory trope beats are exempt from deletion but not from this rule: the beat must land, but *how* it lands gets three candidates too.
+
 ---
 
 ## Layer 2: Prose rules (applied at drafting time)

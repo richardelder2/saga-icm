@@ -51,3 +51,7 @@ last_modified: [YYYY-MM-DD]
 ## 9. Per-chapter dial log (vary these; uniformity is the strongest tell)
 | Ch | Viscosity (H/M/L) | Emotion-mode emphasis | Opening type (scene-set / dialogue / motion / thought) | Register note | Anachrony |
 |---|---|---|---|---|---|
+
+## 10. Anti-default decisions (three candidates per major beat; the first is the presumed AI default)
+| Beat | Candidate 1 — DEFAULT (discarded) | Candidate 2 | Candidate 3 | Chosen | Why it's rarer |
+|---|---|---|---|---|---|

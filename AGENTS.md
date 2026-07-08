@@ -18,6 +18,17 @@ Five stages, each with a `CONTEXT.md` contract declaring inputs, outputs, and pr
 
 To run a stage: `node scripts/saga.js run-stage <id>` prints a **stage packet** — the contract plus every declared input file — as a single context block. Consume it, execute the contract's Process section, and write outputs to the declared paths, using the matching template in `_config/templates/` where one exists. Or simply read the contract and input files yourself; the packet is a convenience, not a requirement.
 
+## The per-chapter production loop
+
+Stages 01–02 run once per book. Chapters then cycle 03 → 04 until passed:
+
+1. `manuscript.json` (project root, created by Stage 02) is the production ledger: per-chapter `status` (`planned → drafted → audited → passed`), draft paths, targets, audit verdicts. `node scripts/saga.js status` renders it and names the next action.
+2. **Draft** (Stage 03): load the chapter kit — beats + structure-plan entries + **canon.md** (facts must agree) + the **voice kit** (`voice_exemplars.md` + final ~500 words of the previous chapter, mandatory anti-drift calibration). Draft, save, set `status: drafted`, append new facts to canon tagged `[unverified chN]`.
+3. **Audit** (Stage 04): mechanical scan (`audit`), continuity scan (`continuity`), canon verification (draft loses conflicts unless canon is deliberately amended), rubric + trope-delivery audits. Fix or route back. On gate-clear: `status: passed`, untag canon entries, optionally harvest a voice exemplar.
+4. When all chapters pass: `node scripts/saga.js compile` (Stage 05) builds the gated HTML/EPUB.
+
+Keep `manuscript.json` truthful — it is the shared state that lets any agent resume the project cold.
+
 ## Agent-led onboarding (no API key needed)
 
 When the user asks to start a new novel/project, DO NOT tell them to run the terminal wizard — run the interview yourself in chat, per `stages/01_onboarding/CONTEXT.md` Path A: ask the blueprint questions one at a time, play the encouraging domain-expert coach between answers, then perform trope discovery from `setup/genre_bibles/INDEX.md` and write the exact output artifacts the contract specifies. The terminal wizard (`node scripts/saga.js wizard onboard`) is the fallback for users working outside an agent harness.
@@ -32,9 +43,11 @@ When the user asks to start a new novel/project, DO NOT tell them to run the ter
 ## CLI reference (mechanical, no AI calls except the wizard)
 
 - `node scripts/saga.js init` — scaffold a clean project elsewhere (run from the empty target folder)
-- `node scripts/saga.js status` — per-stage pipeline status
+- `node scripts/saga.js status` — per-stage pipeline status + manuscript chapter table + next action
 - `node scripts/saga.js run-stage <id>` — print the compiled stage packet
-- `node scripts/saga.js audit [path ...]` — scan chapters for AI prose tells → reports in `stages/04_diagnostics_edits/output/reports/`
+- `node scripts/saga.js audit [path ...]` — scan chapters for AI prose tells → reports in `stages/04_diagnostics_edits/output/reports/`; records `last_audit` in `manuscript.json`
+- `node scripts/saga.js continuity [dir]` — proper-noun continuity scan (near-duplicate/orphaned names) feeding the canon check
+- `node scripts/saga.js compile [--all]` — compile passed chapters → `manuscript.html` (+ `.epub` via pandoc)
 - `node scripts/saga.js wizard onboard [--blueprint=<name>]` — terminal onboarding (needs a model backend in `.env`; agents use Path A instead)
 
 ## Layout

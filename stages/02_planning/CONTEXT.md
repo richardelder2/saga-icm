@@ -14,10 +14,16 @@ outputs:
   - stages/02_planning/output/structure_plan.md
   - stages/02_planning/output/trackers/
   - stages/02_planning/output/beats/
+  - stages/02_planning/output/canon.md
+  - stages/02_planning/output/voice_exemplars.md
+  - manuscript.json
 templates:
   - _config/templates/foolscap.template.md
   - _config/templates/structure_plan.template.md
   - _config/templates/scene_beat.template.md
+  - _config/templates/manuscript.template.json
+  - _config/templates/canon.template.md
+  - _config/templates/voice_exemplars.template.md
 ---
 
 # Stage 02: Planning Beat Sheets
@@ -36,13 +42,20 @@ templates:
    - **Intertextual anchors**: named works, brands, places, songs (real or invented in-world) the story will cite specifically, and where.
    - **Escalation contour**: per-chapter intensity values (1–5) forming a deliberately uneven line — quiet chapters, spikes, false peaks. No flat or evenly-rising contour.
    - **Loose-end ledger**: threads intentionally left unresolved, so Stage 04 doesn't "fix" them.
+   - **Anti-default decisions** (template §10): for every major beat (act turns, midpoint, arc climaxes, endings), generate THREE candidate approaches. Presume the first is the AI default — the choice every model converges on — and discard it unless you can argue it is genuinely the rarest. Log default vs. chosen. This directly attacks the measured convergence of AI stories into a shared narrative region; obligatory-scene ledger entries are exempt (the beat must land, but *how* it lands still gets three candidates).
 5. Create individual scene beat files in `stages/02_planning/output/beats/` (one per chapter, from `_config/templates/scene_beat.template.md`) outlining:
    - Story Grid 5 Commandments (Inciting Incident, Turning Point, Crisis, Climax, Resolution).
    - 4-Step Narrative Addiction Loop (Stakes, Big Question, Head Fake, Rehook).
    - Camera zoom levels (High, Medium, Low Viscosity) — varied across scenes, per the escalation contour.
    - The structural dials from `structure_plan.md` that apply to this scene (anachrony, subplot touchpoints, emotion-mode emphasis), plus any obligatory-scene ledger entry scheduled here.
 
+6. **Initialize the production ledger and living reference docs**:
+   - `manuscript.json` (project root, from `_config/templates/manuscript.template.json`): one entry per planned chapter — beat file, draft path, POV, escalation (from the contour), target words (from the genre bible), `status: planned`. This ledger drives the per-chapter production loop; `node scripts/saga.js status` reads it.
+   - `stages/02_planning/output/canon.md` (from `canon.template.md`): seed with every hard fact already established in the world bible and character files (names/spellings, world rules, starting numbers).
+   - `stages/02_planning/output/voice_exemplars.md` (from `voice_exemplars.template.md`): seed each POV's register line and the character files' sample dialogue; real exemplars accumulate as chapters pass Stage 04.
+
 ## Verification
 - `foolscap.md` exists, fits one page, and agrees with the outline.
-- `structure_plan.md` exists, follows its template, contains the obligatory-scene ledger (step 3), and answers every bullet in step 4.
+- `structure_plan.md` exists, follows its template, contains the obligatory-scene ledger (step 3), and answers every bullet in step 4 — including three logged candidates per major beat.
+- `manuscript.json` exists with one entry per beat file; `canon.md` and `voice_exemplars.md` are seeded.
 - Reject any outline where a ledgered obligatory scene is unscheduled, all arcs resolve the same way, no subplot exists, or the escalation contour is monotonic.

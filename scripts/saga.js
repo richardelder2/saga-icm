@@ -122,6 +122,57 @@ function handleStatus() {
     console.log(`- \x1b[1mStage ${stage}\x1b[0m: ${statusText}`);
     outputFiles.forEach(file => console.log(`    ↳ \x1b[90m${file}\x1b[0m`));
   });
+
+  printManuscriptStatus();
+}
+
+const STATUS_COLORS = { planned: '\x1b[90m', drafted: '\x1b[33m', audited: '\x1b[36m', passed: '\x1b[32m' };
+
+function printManuscriptStatus() {
+  if (!fs.existsSync('manuscript.json')) {
+    console.log('\n\x1b[90mNo manuscript.json — Stage 02 creates the production ledger (see _config/templates/manuscript.template.json).\x1b[0m');
+    return;
+  }
+  let manifest;
+  try {
+    manifest = JSON.parse(fs.readFileSync('manuscript.json', 'utf8'));
+  } catch (e) {
+    console.error(`\nCould not parse manuscript.json: ${e.message}`);
+    return;
+  }
+  const chapters = manifest.chapters || [];
+  printHeader(`Manuscript: ${manifest.title || 'untitled'} (${chapters.length} chapters)`);
+
+  let totalWords = 0;
+  chapters.forEach(ch => {
+    let words = 0;
+    const draft = (ch.draft_file || '').replace(/\//g, path.sep);
+    if (draft && fs.existsSync(draft)) {
+      const raw = fs.readFileSync(draft, 'utf8');
+      words = (raw.match(/[\w'’-]+/g) || []).length;
+    }
+    totalWords += words;
+    const color = STATUS_COLORS[ch.status] || '';
+    const audit = ch.last_audit ? `  audit:${ch.last_audit}` : '';
+    const wordStr = words ? `${words}${ch.target_words ? '/' + ch.target_words : ''}w` : '';
+    console.log(`  ch ${String(ch.id).padStart(2)}  ${color}${(ch.status || 'planned').padEnd(8)}\x1b[0m ${wordStr.padEnd(12)}${audit}  \x1b[90m${ch.title || ''}\x1b[0m`);
+  });
+
+  const target = manifest.target_words ? ` / ${manifest.target_words.toLocaleString()} target` : '';
+  console.log(`\n  Total: ${totalWords.toLocaleString()} words${target}`);
+
+  // Production loop: what's next?
+  const next = chapters.find(ch => ch.status !== 'passed');
+  if (!next) {
+    console.log('  \x1b[32mAll chapters passed — next action: Stage 05 compile (node scripts/saga.js compile)\x1b[0m');
+  } else {
+    const action = {
+      planned: `draft it (Stage 03 — beats: ${next.beat_file || 'n/a'})`,
+      drafted: `audit it (Stage 04 — node scripts/saga.js audit, then the rubric)`,
+      audited: `resolve findings and pass the Stage 04 gate`,
+    }[next.status] || 'check its status value';
+    console.log(`  Next action → chapter ${next.id}: ${action}`);
+  }
 }
 
 function getFilesRecursive(dir) {
@@ -171,6 +222,16 @@ function handleWizard(type) {
 async function handleAudit() {
   const { runAudit } = await import('./narrative_audit.js');
   runAudit(args.slice(1));
+}
+
+async function handleContinuity() {
+  const { runContinuityScan } = await import('./continuity_scan.js');
+  runContinuityScan(args.slice(1));
+}
+
+async function handleCompile() {
+  const { compileManuscript } = await import('./compile_manuscript.js');
+  compileManuscript(args.slice(1));
 }
 
 // Parse a simple YAML frontmatter list block (e.g. "inputs:" / "templates:") from a contract.
@@ -267,6 +328,10 @@ Usage:
                                               templates) for the executing agent or API pipeline
   node scripts/saga.js audit [path ...]       Scan chapters for AI prose tells (default: stage 03 output);
                                               writes reports to stages/04_diagnostics_edits/output/reports/
+  node scripts/saga.js continuity [dir]       Scan chapters for name inconsistencies (near-duplicate /
+                                              orphaned proper nouns) feeding the canon check
+  node scripts/saga.js compile [--all]        Compile passed chapters into manuscript.html (+ .epub via
+                                              pandoc); --all ignores the Stage 04 gate
   `);
 }
 
@@ -285,6 +350,12 @@ switch (command) {
     break;
   case 'audit':
     handleAudit();
+    break;
+  case 'continuity':
+    handleContinuity();
+    break;
+  case 'compile':
+    handleCompile();
     break;
   case '--help':
   case 'help':
