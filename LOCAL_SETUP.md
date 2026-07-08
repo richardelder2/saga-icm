@@ -81,16 +81,16 @@ If you run this pipeline inside **Claude Code** or **Antigravity CLI** (using yo
 
 ## 🏗️ Step 3: Scaffold a Clean Novel Project Folder
 
-To ensure your master template repository `C:\Users\richa\saga_icm` remains completely clean and free of narrative files, use the CLI's `init` command to generate a new, blank workspace elsewhere:
+To ensure your master template repository (wherever you cloned `saga-icm`) remains completely clean and free of narrative files, use the CLI's `init` command to generate a new, blank workspace elsewhere:
 
-1. Create a blank folder where you want to write your book (e.g. `C:\Users\richa\my_new_novel`).
+1. Create a blank folder where you want to write your book (e.g. `~/my_new_novel` or `C:\Users\<you>\my_new_novel`).
 2. Open your terminal inside this new folder:
    ```bash
-   cd C:\Users\richa\my_new_novel
+   cd path/to/my_new_novel
    ```
-3. Run the SAGA-ICM initializer pointing to the template CLI script:
+3. Run the SAGA-ICM initializer pointing to the template CLI script (use your clone's path):
    ```bash
-   node "C:\Users\richa\saga_icm\scripts\saga.js" init
+   node "path/to/saga-icm/scripts/saga.js" init
    ```
 4. Run `npm install` inside your new directory to configure dependencies.
 5. **Launch Claude Code using your chosen profile**:

@@ -63,10 +63,13 @@ function handleInit() {
     'scripts',
     '.claude',
     'package.json',
+    'AGENTS.md',
     'CLAUDE.md',
+    'GEMINI.md',
     'CONTEXT.md',
     'README.md',
-    'LOCAL_SETUP.md'
+    'LOCAL_SETUP.md',
+    'LICENSE'
   ];
 
   items.forEach(item => {
@@ -170,6 +173,37 @@ async function handleAudit() {
   runAudit(args.slice(1));
 }
 
+// Parse a simple YAML frontmatter list block (e.g. "inputs:" / "templates:") from a contract.
+function parseFrontmatterList(content, key) {
+  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!fm) return [];
+  const lines = fm[1].split(/\r?\n/);
+  const items = [];
+  let inBlock = false;
+  for (const line of lines) {
+    if (new RegExp(`^${key}:\\s*$`).test(line)) { inBlock = true; continue; }
+    if (inBlock) {
+      const item = line.match(/^\s+-\s+(\S[^#]*?)\s*(#.*)?$/);
+      if (item) items.push(item[1].trim());
+      else if (/^\S/.test(line)) inBlock = false; // next top-level key
+    }
+  }
+  return items;
+}
+
+const PACKET_FILE_CAP = 48 * 1024; // per-file cap to keep packets consumable
+
+function emitPacketEntry(label, filePath) {
+  console.log(`\n--- ${label}: ${filePath} ---`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  if (raw.length > PACKET_FILE_CAP) {
+    console.log(raw.slice(0, PACKET_FILE_CAP));
+    console.log(`\n[TRUNCATED at ${PACKET_FILE_CAP} chars — read the file directly for the remainder: ${filePath}]`);
+  } else {
+    console.log(raw);
+  }
+}
+
 function handleRunStage(stageId) {
   const matchingStage = STAGES.find(s => s.startsWith(stageId) || s === stageId);
   if (!matchingStage) {
@@ -177,17 +211,47 @@ function handleRunStage(stageId) {
     process.exit(1);
   }
 
-  printHeader(`Running Stage: ${matchingStage}`);
   const stagePath = path.join('stages', matchingStage);
   const contractPath = path.join(stagePath, 'CONTEXT.md');
-  
+
   if (!fs.existsSync(contractPath)) {
     console.error(`Stage contract not found at: ${contractPath}`);
     process.exit(1);
   }
 
-  console.log(`Loaded stage contract from ${contractPath}.`);
-  console.log(`Please run the corresponding wizard or let your agent co-author complete the steps detailed in the contract.`);
+  // Compile the stage packet: contract + declared inputs + declared templates,
+  // as one context block any executor (agent or API) can consume.
+  const contract = fs.readFileSync(contractPath, 'utf8');
+  console.log(`=== STAGE PACKET: ${matchingStage} ===`);
+  emitPacketEntry('CONTRACT', contractPath);
+
+  const inputs = parseFrontmatterList(contract, 'inputs');
+  const templates = parseFrontmatterList(contract, 'templates');
+  const missing = [];
+
+  for (const [label, group] of [['INPUT', inputs], ['TEMPLATE', templates]]) {
+    for (const item of group) {
+      const p = item.replace(/\//g, path.sep);
+      if (!fs.existsSync(p)) {
+        missing.push(item);
+        continue;
+      }
+      if (fs.statSync(p).isDirectory()) {
+        const files = getFilesRecursive(p).filter(f => /\.(md|txt|json|markdown)$/i.test(f));
+        if (files.length === 0) missing.push(`${item} (directory is empty)`);
+        files.forEach(f => emitPacketEntry(label, f));
+      } else {
+        emitPacketEntry(label, p);
+      }
+    }
+  }
+
+  console.log(`\n=== END PACKET: ${matchingStage} ===`);
+  if (missing.length) {
+    console.log(`\nMissing inputs (produce these via the earlier stage, or proceed if the contract marks them optional):`);
+    missing.forEach(m => console.log(`  ✗ ${m}`));
+  }
+  console.log(`\nExecutor instructions: follow the CONTRACT's Process section. Write outputs to the exact paths its frontmatter declares, using the TEMPLATE structures where provided. Verify against the contract's Verification section before marking the stage complete.`);
 }
 
 function showHelp() {
@@ -199,7 +263,8 @@ Usage:
   node scripts/saga.js status                 Show the status of each pipeline stage
   node scripts/saga.js wizard onboard         Start the interactive onboarding session
                        [--blueprint=<name>]   Pick a setup/ questionnaire (default: comfort-scifi)
-  node scripts/saga.js run-stage <stage_id>   View contract and execute/validate a specific stage pipeline
+  node scripts/saga.js run-stage <stage_id>   Compile the stage packet (contract + declared inputs +
+                                              templates) for the executing agent or API pipeline
   node scripts/saga.js audit [path ...]       Scan chapters for AI prose tells (default: stage 03 output);
                                               writes reports to stages/04_diagnostics_edits/output/reports/
   `);

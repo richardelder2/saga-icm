@@ -78,7 +78,7 @@ export async function callGemini(prompt, systemInstruction = '', isHeavy = false
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${openRouterKey}`,
-          'HTTP-Referer': 'https://github.com/richardelder2/Saga',
+          'HTTP-Referer': process.env.SAGA_REPO_URL || 'https://github.com/saga-icm',
           'X-Title': 'SAGA-ICM'
         },
         body: JSON.stringify(payload),

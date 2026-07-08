@@ -7,31 +7,38 @@ A portable, token-efficient system for writing novels with AI co-authors, built 
 | Stage | Folder | Produces |
 |---|---|---|
 | 1. Onboarding | `stages/01_onboarding/` | preferences, world bible, character seeds, **filled genre bible + trope stack** |
-| 2. Planning | `stages/02_planning/` | outline, **structure plan** (incl. obligatory-scene ledger), continuity trackers, scene beats |
+| 2. Planning | `stages/02_planning/` | **foolscap page**, outline, **structure plan** (incl. obligatory-scene ledger), continuity trackers, scene beats |
 | 3. Drafting | `stages/03_drafting/` | chapter prose |
 | 4. Diagnostics & Edits | `stages/04_diagnostics_edits/` | audit reports, revision playbooks |
 | 5. Publishing | `stages/05_publishing/` | HTML / EPUB manuscript |
 
-Each stage has a `CONTEXT.md` contract declaring its inputs, outputs, and process. Tell your agent: *"Read stages/02_planning/CONTEXT.md and execute it."*
+Each stage has a `CONTEXT.md` contract declaring its inputs, outputs, and process, with output skeletons in `_config/templates/` so every executor produces identical artifacts. Planning starts from a **foolscap page** (Story Grid / Pressfield): the whole book on one sheet before any outline exists.
+
+## Built for agent harnesses
+
+This system is designed to be driven by a high-level coding agent — Claude Code, Codex, Antigravity, Gemini CLI, Hermes, Pi, or similar. **`AGENTS.md` is the canonical instruction set** (`CLAUDE.md`/`GEMINI.md` are pointers to it); point your agent at the repo and it knows the rules. The agent IS the model: it runs the onboarding interview in chat, plans, drafts, and audits directly — **no API key required**. Two conveniences:
+
+- `node scripts/saga.js run-stage <id>` compiles a **stage packet** — the contract plus every declared input and template in one block — for the agent (or an API pipeline) to consume.
+- The mechanical tools (`audit`, `status`, `init`) never call a model at all.
+
+External model APIs (local Ollama, OpenRouter, Gemini — see `LOCAL_SETUP.md`) remain available as a secondary executor for the terminal wizard and headless/batch runs.
 
 ## Quick start
 
 ```bash
 # scaffold a fresh project in an empty folder
-node "path/to/saga_icm/scripts/saga.js" init
+node "path/to/saga-icm/scripts/saga.js" init
 npm install
-
-# interactive story-design interview
-node scripts/saga.js wizard onboard --blueprint=comfort-scifi
-
-# check progress anytime
-node scripts/saga.js status
-
-# scan drafted chapters for AI prose tells
-node scripts/saga.js audit
 ```
 
-Model backends (local Ollama, OpenRouter, Gemini) are configured in `.env` — see `LOCAL_SETUP.md`.
+Then, **with an agent**: say *"read AGENTS.md and onboard me for a new novel"* — it interviews you in chat, fills the genre bible, and the pipeline proceeds stage by stage (*"run stage 02"*, etc.).
+
+**Without an agent** (terminal + API backend in `.env`):
+```bash
+node scripts/saga.js wizard onboard --blueprint=comfort-scifi
+node scripts/saga.js status        # progress anytime
+node scripts/saga.js audit         # scan drafts for AI prose tells
+```
 
 ## The authenticity system (what makes this different)
 
