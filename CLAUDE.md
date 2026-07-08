@@ -5,6 +5,7 @@ Welcome to the SAGA Interpretable Context Methodology (ICM) Workspace. This repo
 ## Workspace Layout
 - `_config/`: Global configurations, style rules, and conventions (Layer 3).
 - `setup/`: Questionnaires and blueprints for starting new projects (Layer 3).
+  - `genre_bibles/`: Fill-in series templates per genre cluster — trope stacks, beat sheets, obligatory scenes, continuity trackers. Selected in Stage 01, mapped in Stage 02 (see `setup/genre_bibles/INDEX.md`).
 - `stages/`: Process-specific folder boundaries (Layer 2 Stage contracts & Layer 4 Working artifacts).
   - `01_onboarding/`: Compiling premise, preferences, and characters.
   - `02_planning/`: Designing outlines, act beats, and scene shifts.

@@ -6,8 +6,8 @@ A portable, token-efficient system for writing novels with AI co-authors, built 
 
 | Stage | Folder | Produces |
 |---|---|---|
-| 1. Onboarding | `stages/01_onboarding/` | preferences, world bible, character seeds |
-| 2. Planning | `stages/02_planning/` | outline, **structure plan**, scene beats |
+| 1. Onboarding | `stages/01_onboarding/` | preferences, world bible, character seeds, **filled genre bible + trope stack** |
+| 2. Planning | `stages/02_planning/` | outline, **structure plan** (incl. obligatory-scene ledger), continuity trackers, scene beats |
 | 3. Drafting | `stages/03_drafting/` | chapter prose |
 | 4. Diagnostics & Edits | `stages/04_diagnostics_edits/` | audit reports, revision playbooks |
 | 5. Publishing | `stages/05_publishing/` | HTML / EPUB manuscript |
@@ -47,10 +47,14 @@ The full rule set lives in `_config/narrative_authenticity.md`. Everything is a 
 
 Two Claude Code skills ship with the repo (`.claude/skills/`): **narrative-authenticity** (applies the rules during planning/drafting/review) and **structure-humanize** (diagnoses and repairs structural tells in existing drafts).
 
+## The trope system
+
+`setup/genre_bibles/` holds fill-in series templates for five commercial genre clusters (romance/romantasy, rom-com, cozy, thriller/mystery, fantasy/SF/horror). Each defines a flagship **trope stack**, a chapter-level beat sheet with obligatory scenes, and continuity trackers. Stage 01 selects and fills a bible with the author; Stage 02 schedules every promised beat in an **obligatory-scene ledger**; Stage 04 audits delivery. Tropes and authenticity coexist by altitude: the trope stack is the reader contract and is never subverted — the authenticity dials roughen the connective tissue around it, which is where AI tells actually live. See `setup/genre_bibles/INDEX.md`.
+
 ## Layout
 
 - `_config/` — global style + authenticity rules (Layer 3 context)
-- `setup/` — onboarding questionnaires/blueprints
+- `setup/` — onboarding questionnaires/blueprints; `genre_bibles/` trope-stack templates
 - `stages/01–05/` — stage contracts and working artifacts
 - `scripts/` — mechanical Node.js CLI (`saga.js`, wizards, `narrative_audit.js`)
 - `.claude/skills/` — portable agent skills

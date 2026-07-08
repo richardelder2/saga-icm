@@ -13,7 +13,9 @@ AI fiction is detectable at two layers. **Prose tells** (word choice, rhythm, cl
 
 ## How to use this file
 
-These are **dials, not switches**. Every rule below is a statistical tendency in human fiction, not a law. Mechanically inverting every AI tell in every chapter creates a new, equally artificial fingerprint. Instead:
+These are **dials, not switches**. Every rule below is a statistical tendency in human fiction, not a law. Mechanically inverting every AI tell in every chapter creates a new, equally artificial fingerprint.
+
+**Precedence — tropes outrank dials.** If the project has a genre bible (`stages/01_onboarding/output/bible/genre_bible.md`), its obligatory scenes and trope stack are a reader contract: no rule in this file may delete, weaken, or "subvert" a ledgered obligatory beat (the HEA, the fair-play reveal, the rank-up crescendo…). These dials govern the telling *between and inside* those beats — the connective tissue, where the AI tells actually live. See "Tropes vs. the authenticity directive" in `setup/genre_bibles/INDEX.md`. Then:
 
 1. During **planning (Stage 02)**, make deliberate choices on each structural dial and record them in `structure_plan.md`.
 2. During **drafting (Stage 03)**, obey the structure plan and the prose rules.

@@ -37,5 +37,5 @@ Apply approved interventions chapter by chapter, preserving voice, characters, a
 
 ## Cautions
 - Change structure, not voice: this pass must not introduce new prose tells (check the Layer 2 rules in `_config/narrative_authenticity.md` while rewriting).
-- Not every draft needs every fix — an intervention that fights the story's genre contract (e.g., romance requires the ending to resolve) should be flagged, not forced.
+- Not every draft needs every fix — an intervention that fights the story's genre contract (e.g., romance requires the ending to resolve) should be flagged, not forced. If the project has a genre bible, its obligatory-scene ledger in `structure_plan.md` is untouchable: interventions reshape the tissue between ledgered beats, never the beats themselves (see `setup/genre_bibles/INDEX.md`).
 - Respect intentional choices: check the structure plan's loose-end ledger and dial settings before "fixing" something the author chose.

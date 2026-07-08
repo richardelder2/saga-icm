@@ -14,7 +14,8 @@ AI-generated fiction is detectable at two independent layers, and only one of th
 
 - `_config/narrative_authenticity.md` — the full directive: Layer 1 structural rules, Layer 2 prose rules, Layer 3 Claude fingerprint counters. **This is the source of truth.**
 - `_config/narrative_audit_rubric.md` — 30-question structural self-check.
-- `stages/02_planning/output/structure_plan.md` — the project's chosen dials (if it exists).
+- `stages/02_planning/output/structure_plan.md` — the project's chosen dials and the obligatory-scene ledger (if it exists).
+- `stages/01_onboarding/output/bible/genre_bible.md` + `setup/genre_bibles/INDEX.md` — the trope stack and reader contract. **Tropes outrank dials**: never delete, weaken, or "subvert" a ledgered obligatory beat; the authenticity rules apply to everything around those beats.
 
 ## What to do, by task
 
