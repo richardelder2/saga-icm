@@ -76,6 +76,13 @@ graph TD
 * **The Living Fact Bible (`canon.md`):** Every time a chapter is drafted, the agent harvests new facts (e.g., *"[unverified ch2] Mark has a scar on his left shoulder"*). Once the chapter passes Stage 04, the tag is cleared. This ensures facts remain cohesive across the entire book.
 * **The Voice Calibration Kit:** AI text generators tend to slide back toward generic prose. To prevent this, drafting matches your specific style by feeding the agent only the last 500 words of the previous chapter and a short list of *voice exemplars*. This keeps your style perfectly anchored without bloating the AI's memory.
 
+### 🤝 E. Human-in-the-Loop (HITL) Revision Playbooks
+Unlike simple generators that silently overwrite text or make arbitrary edits, SAGA-ICM utilizes a collaborative revision process when a chapter fails its audits:
+* **The Playbook:** The agent instantiates a custom playbook file (`revision_playbook_ch[X].md`) mapping out audit diagnostics.
+* **Options Proposal:** For each issue (e.g., explained theme, low dialogue ratio), the agent suggests 2–3 specific options to fix it.
+* **Author Control:** You select the best options or suggest your own changes. The agent compiles these choices into a final approved plan.
+* **Execution & Re-Audit:** The agent performs the rewrites and runs a final scan to verify that the chapter has successfully cleared the gate.
+
 ---
 
 ## 4. Quick Commands to Tell Your Agent
