@@ -52,16 +52,16 @@ function handleInit() {
     return;
   }
 
-  console.log(`Copying template files from: ${templateDir}`);
   console.log(`Initializing clean workspace at: ${targetDir}`);
+  console.log(`Template source: ${templateDir}`);
 
-  // Items to copy
-  const items = [
+  // Folders to try to link (shared, read-only logic/templates)
+  const linkedItems = ['scripts', 'setup', '.claude'];
+  
+  // Items to copy physically (project-specific configs and data)
+  const copiedItems = [
     '_config',
-    'setup',
     'stages',
-    'scripts',
-    '.claude',
     'package.json',
     'AGENTS.md',
     'CLAUDE.md',
@@ -72,11 +72,32 @@ function handleInit() {
     'LICENSE'
   ];
 
-  items.forEach(item => {
+  console.log('\nConfiguring files...');
+
+  // 1. Process linked items
+  linkedItems.forEach(item => {
+    const srcPath = path.join(templateDir, item);
+    const destPath = path.join(targetDir, item);
+    if (!fs.existsSync(srcPath)) return;
+
+    try {
+      const type = process.platform === 'win32' ? 'junction' : 'dir';
+      fs.symlinkSync(srcPath, destPath, type);
+      console.log(`  ✔ Linked directory: ${item}`);
+    } catch (e) {
+      // Fallback to physical copy
+      copyRecursiveSync(srcPath, destPath);
+      console.log(`  ✔ Copied directory (fallback): ${item}`);
+    }
+  });
+
+  // 2. Process copied items
+  copiedItems.forEach(item => {
     const srcPath = path.join(templateDir, item);
     const destPath = path.join(targetDir, item);
     if (fs.existsSync(srcPath)) {
       copyRecursiveSync(srcPath, destPath);
+      console.log(`  ✔ Copied file/folder: ${item}`);
     }
   });
 
@@ -97,7 +118,7 @@ LOCAL_MODEL_NAME=gemma2
 # Option C: Gemini Cloud
 # GEMINI_API_KEY=your_key
 `, 'utf8');
-    console.log('Created template .env file.');
+    console.log('  ✔ Created template .env file.');
   }
 
   console.log('\n\x1b[32m✔ SAGA-ICM Workspace successfully initialized! Run "npm install" to configure dependencies.\x1b[0m\n');
