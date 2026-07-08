@@ -24,7 +24,7 @@ Stages 01–02 run once per book. Chapters then cycle 03 → 04 until passed:
 
 1. `manuscript.json` (project root, created by Stage 02) is the production ledger: per-chapter `status` (`planned → drafted → audited → passed`), draft paths, targets, audit verdicts. `node scripts/saga.js status` renders it and names the next action.
 2. **Draft** (Stage 03): load the chapter kit — beats + structure-plan entries + **canon.md** (facts must agree) + the **voice kit** (`voice_exemplars.md` + final ~500 words of the previous chapter, mandatory anti-drift calibration). Draft, save, set `status: drafted`, append new facts to canon tagged `[unverified chN]`.
-3. **Audit** (Stage 04): mechanical scan (`audit`), continuity scan (`continuity`), canon verification (draft loses conflicts unless canon is deliberately amended), rubric + trope-delivery audits. Fix or route back. On gate-clear: `status: passed`, untag canon entries, optionally harvest a voice exemplar.
+3. **Audit** (Stage 04): mechanical scan (`audit`), continuity scan (`continuity`), canon verification (draft loses conflicts unless canon is deliberately amended), rubric + trope-delivery audits. If audit failures are found, instantiate the **Revision Playbook** (`_config/templates/revision_playbook.template.md`), propose 2–3 resolution options for each failure to the author, compile their choices into a final approved plan, rewrite the chapter, and re-audit. On gate-clear: `status: passed`, untag canon entries, optionally harvest a voice exemplar.
 4. When all chapters pass: `node scripts/saga.js compile` (Stage 05) builds the gated HTML/EPUB.
 
 Keep `manuscript.json` truthful — it is the shared state that lets any agent resume the project cold.

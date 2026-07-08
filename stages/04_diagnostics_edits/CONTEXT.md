@@ -12,6 +12,7 @@ inputs:
   - manuscript.json
   - _config/narrative_authenticity.md
   - _config/narrative_audit_rubric.md
+  - _config/templates/revision_playbook.template.md
 ---
 
 # Stage 04: Diagnostics & Copy-Edits
@@ -26,9 +27,13 @@ inputs:
 5. **Arc delivery audit**: walk each beat schedule in `character_arcs.md` — every arc beat scheduled in the audited chapters delivered on page, through choice/behavior/image. Two failure modes, both structural: the beat is missing (plot happened, nobody changed), or the beat is *narrated* ("she understood now that…" — quote it, cut it, re-render as action). Check the checkbox in the arc sheet only when delivered.
 6. Execute legacy diagnostics (prose rhythm standard deviations, dialogue heat register analysis, character timeline resource tracking) and merge findings into the reports.
 7. Generate developmental editorial reports inside `stages/04_diagnostics_edits/output/reports/`.
-8. Create actionable editing playbooks inside `stages/04_diagnostics_edits/output/playbooks/` and execute them:
-   - **Prose failures** → targeted line edits / Stage 03 redraft of flagged passages.
-   - **Structural failures** (theme explained, no subplots, all-linear time, uniform resolutions) → route BACK to Stage 02 for re-planning. Do not attempt to fix structural tells with line edits; research shows style editing does not remove them.
+8. **Create and execute the Revision Playbook (HITL Process)**:
+   - For chapters failing audits, instantiate a copy of `_config/templates/revision_playbook.template.md` in `stages/04_diagnostics_edits/output/playbooks/revision_playbook_ch[X].md`.
+   - **Critique & Options:** Log the audit details and present 2–3 actionable options for each failure.
+   - **HITL Choice:** Present the options to the author. Wait for their selection or custom direction.
+   - **Final Plan:** Consolidate selected options into a checklist.
+   - **Rewrite:** Execute the revisions in the chapter file. Run a final audit scan and update the log in the playbook to confirm the gate passes.
+   - For **structural failures** (theme explained, missing subplots, uniform resolutions), do not attempt to fix with line edits; route the playbook choices back to Stage 02 planning modifications first.
 9. **Bookkeeping**: set the chapter's `status` in `manuscript.json` — `audited` while findings are open, `passed` when the gate clears. On pass, consider harvesting one standout passage into `voice_exemplars.md` (keep 2–3 per POV, rotate stale ones out).
 
 ## Gate
