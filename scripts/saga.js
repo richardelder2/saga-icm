@@ -55,13 +55,19 @@ function handleInit() {
   console.log(`Initializing clean workspace at: ${targetDir}`);
   console.log(`Template source: ${templateDir}`);
 
-  // Folders to try to link (shared, read-only logic/templates)
-  const linkedItems = ['scripts', 'setup', '.claude'];
-  
-  // Items to copy physically (project-specific configs and data)
-  const copiedItems = [
+  // Every project gets its own physical copy of everything. The combined size of
+  // scripts/setup/.claude is under 200KB, so disk bloat is not a real concern —
+  // and a physical copy keeps each project fully self-contained (no shared state
+  // across parallel projects, no broken references when a project is cloned onto
+  // a machine without the template repo at the same path). To pick up template
+  // fixes later, re-run `init` inside the project (see AGENTS.md "Multiple
+  // projects & series" — outputs, manuscript.json, and .env are preserved).
+  const items = [
     '_config',
+    'setup',
     'stages',
+    'scripts',
+    '.claude',
     'package.json',
     'AGENTS.md',
     'CLAUDE.md',
@@ -74,30 +80,12 @@ function handleInit() {
 
   console.log('\nConfiguring files...');
 
-  // 1. Process linked items
-  linkedItems.forEach(item => {
-    const srcPath = path.join(templateDir, item);
-    const destPath = path.join(targetDir, item);
-    if (!fs.existsSync(srcPath)) return;
-
-    try {
-      const type = process.platform === 'win32' ? 'junction' : 'dir';
-      fs.symlinkSync(srcPath, destPath, type);
-      console.log(`  ✔ Linked directory: ${item}`);
-    } catch (e) {
-      // Fallback to physical copy
-      copyRecursiveSync(srcPath, destPath);
-      console.log(`  ✔ Copied directory (fallback): ${item}`);
-    }
-  });
-
-  // 2. Process copied items
-  copiedItems.forEach(item => {
+  items.forEach(item => {
     const srcPath = path.join(templateDir, item);
     const destPath = path.join(targetDir, item);
     if (fs.existsSync(srcPath)) {
       copyRecursiveSync(srcPath, destPath);
-      console.log(`  ✔ Copied file/folder: ${item}`);
+      console.log(`  ✔ Copied: ${item}`);
     }
   });
 

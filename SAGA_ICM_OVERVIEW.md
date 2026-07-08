@@ -84,12 +84,11 @@ Unlike simple generators that silently overwrite text or make arbitrary edits, S
 * **Author Control:** You select the best options or suggest your own changes. The agent compiles these choices into a final approved plan.
 * **Execution & Re-Audit:** The agent performs the rewrites and runs a final scan to verify that the chapter has successfully cleared the gate.
 
-### 🏢 F. Turnkey Zero-Bloat Workspaces
+### 🏢 F. Turnkey, Self-Contained Workspaces
 To make starting a new book as seamless and turnkey as moving into a fully furnished apartment:
-* **One-Step Setup:** Running `saga init` inside any empty folder sets up everything you need in seconds.
-* **Smart Linking (Junctions & Symlinks):** SAGA-ICM automatically links the core logic and templates (`scripts`, `setup`, `.claude`) back to your central template folder.
-* **Zero Disk Bloat & Instant Upgrades:** Your new book folder only holds your actual writing. Plus, if the main SAGA code is updated or fixed, all your active book projects are upgraded instantly with zero action required on your part.
-* **Frictionless Fallback:** If your operating system blocks directory linking, SAGA-ICM silently falls back to standard physical copies. It "just works" regardless of your technical settings.
+* **One-Step Setup:** Running `saga init` inside any empty folder copies everything you need in seconds — the whole system is under 200KB, so there's no real disk cost to giving every project its own full copy.
+* **Fully Self-Contained:** Each book project is a complete, independent copy of the system. Nothing is shared or linked between projects, so editing one book can never affect another, and a project folder works correctly even when copied or cloned to a different computer.
+* **Deliberate Upgrades:** If the core SAGA logic improves later, re-run `saga init` inside an existing project to refresh it — your manuscript, ledger, and `.env` are preserved. Because it's a deliberate step (not automatic), you can review what changed before it touches a book you're actively working on.
 
 ### ✍️ G. Solo-Author Mode (Writing Your Own Prose)
 If you prefer to write every word of your own manuscript, SAGA-ICM remains a powerful partner:
