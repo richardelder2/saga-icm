@@ -91,6 +91,17 @@ To make starting a new book as seamless and turnkey as moving into a fully furni
 * **Zero Disk Bloat & Instant Upgrades:** Your new book folder only holds your actual writing. Plus, if the main SAGA code is updated or fixed, all your active book projects are upgraded instantly with zero action required on your part.
 * **Frictionless Fallback:** If your operating system blocks directory linking, SAGA-ICM silently falls back to standard physical copies. It "just works" regardless of your technical settings.
 
+### ✍️ G. Solo-Author Mode (Writing Your Own Prose)
+If you prefer to write every word of your own manuscript, SAGA-ICM remains a powerful partner:
+* **Writing Sandbox:** The agent prepares your outline, character beats, and world facts, setting up a clean sandbox for you to draft.
+* **Workspace Custodian:** The agent automatically detects when you create or drop a draft file, moves it to the correct path, formats the frontmatter, and updates `manuscript.json` word counts and ledger statuses.
+* **Automatic Fact Harvesting:** The agent reads your text, extracts established facts (e.g., character scars, item locations, timeline days), and appends them to `canon.md` automatically, saving you from world-bible bookkeeping.
+
+### 🤝 H. Hybrid Co-Writing Mode (Switching Fluidly)
+You can choose your writing style chapter-by-chapter. There are no global settings to lock you in:
+* **Fluid Transitions:** Write Chapters 1–3 yourself, ask the agent to draft Chapter 4, edit Chapter 4 together, and take over again to write Chapter 5.
+* **Tone Preservation:** When transitioning from your writing to agent-written prose, the agent automatically reads the last 500 words of your chapter to calibrate its voice kit, ensuring a seamless, consistent tone.
+
 ---
 
 ## 4. Quick Commands to Tell Your Agent
