@@ -5,6 +5,16 @@ import * as path from 'path';
 import { fork } from 'child_process';
 import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const APP_NAME = 'SAGA-ICM';
+const BIN_NAME = 'saga';
+
+export function readText(p) {
+  return fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, '');
+}
+
 const args = process.argv.slice(2);
 const command = args[0];
 const subCommand = args[1];
@@ -26,7 +36,7 @@ function copyRecursiveSync(src, dest) {
   const stats = exists && fs.statSync(src);
   const isDirectory = exists && stats.isDirectory();
   if (isDirectory) {
-    if (path.basename(src) === 'output') return; // Skip stage outputs to keep it blank
+    if (path.basename(src) === 'output') return;
     fs.mkdirSync(dest, { recursive: true });
     fs.readdirSync(src).forEach(childItemName => {
       copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
@@ -37,31 +47,31 @@ function copyRecursiveSync(src, dest) {
   }
 }
 
-function handleInit() {
+function handleInit(targetFolder) {
   printHeader('Initializing SAGA-ICM Workspace');
   
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const templateDir = path.dirname(__dirname); // The template SAGA-ICM folder
-  const targetDir = process.cwd();
+  const templateDir = path.dirname(__dirname);
+  
+  let targetDir = process.cwd();
+  if (targetFolder) {
+    targetDir = path.isAbsolute(targetFolder) ? targetFolder : path.resolve(process.cwd(), targetFolder);
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+  }
 
-  if (templateDir === targetDir) {
+  if (path.resolve(templateDir) === path.resolve(targetDir)) {
     console.log('\x1b[33mWarning: You are running init inside the template repository itself.\x1b[0m');
-    console.log('To start a clean project, create a blank directory elsewhere, cd into it, and run:');
-    console.log(`  node "${path.join(templateDir, 'scripts', 'saga.js')}" init`);
+    console.log('Each novel must live in its own separate project folder.');
+    console.log('To initialize a clean novel workspace in a dedicated folder, run:');
+    console.log(`  node "${path.join(templateDir, 'scripts', 'saga.js')}" init <folder_name>`);
+    console.log('Or create a blank directory elsewhere, cd into it, and run init.');
     return;
   }
 
   console.log(`Initializing clean workspace at: ${targetDir}`);
   console.log(`Template source: ${templateDir}`);
 
-  // Every project gets its own physical copy of everything. The combined size of
-  // scripts/setup/.claude is under 200KB, so disk bloat is not a real concern —
-  // and a physical copy keeps each project fully self-contained (no shared state
-  // across parallel projects, no broken references when a project is cloned onto
-  // a machine without the template repo at the same path). To pick up template
-  // fixes later, re-run `init` inside the project (see AGENTS.md "Multiple
-  // projects & series" — outputs, manuscript.json, and .env are preserved).
   const items = [
     '_config',
     'setup',
@@ -89,29 +99,39 @@ function handleInit() {
     }
   });
 
+  // Copy project.gitignore if target doesn't have .gitignore
+  const gitignoreDest = path.join(targetDir, '.gitignore');
+  const projectGitignoreSrc = path.join(templateDir, '_config', 'templates', 'project.gitignore');
+  if (!fs.existsSync(gitignoreDest) && fs.existsSync(projectGitignoreSrc)) {
+    fs.copyFileSync(projectGitignoreSrc, gitignoreDest);
+    console.log('  ✔ Created project .gitignore (preserves manuscript.json and stage outputs).');
+  }
+
   // Write default .env template if it doesn't exist
   const envPath = path.join(targetDir, '.env');
   if (!fs.existsSync(envPath)) {
-    fs.writeFileSync(envPath, `# SAGA-ICM Environment Variables
-# Option A: Local Edge (Ollama)
-LOCAL_MODEL=true
-LOCAL_MODEL_URL=http://localhost:11434/v1/chat/completions
-LOCAL_MODEL_NAME=gemma2
-
-# Option B: OpenRouter
-# USE_OPENROUTER=true
-# OPENROUTER_API_KEY=your_key
-# OPENROUTER_MODEL=meta-llama/llama-3-8b-instruct:free
-
-# Option C: Gemini Cloud
-# GEMINI_API_KEY=your_key
-`, 'utf8');
+    const envContent = [
+      `# ${APP_NAME} Environment Variables`,
+      '# Option A: Local Edge (Ollama)',
+      'LOCAL_MODEL=true',
+      'LOCAL_MODEL_URL=http://localhost:11434/v1/chat/completions',
+      'LOCAL_MODEL_NAME=gemma2',
+      '',
+      '# Option B: OpenRouter',
+      '# USE_OPENROUTER=true',
+      '# OPENROUTER_API_KEY=your_key',
+      '# OPENROUTER_MODEL=meta-llama/llama-3-8b-instruct:free',
+      '',
+      '# Option C: Gemini Cloud',
+      '# GEMINI_API_KEY=your_key',
+      ''
+    ].join('\n');
+    fs.writeFileSync(envPath, envContent, 'utf8');
     console.log('  ✔ Created template .env file.');
   }
 
-  console.log('\n\x1b[32m✔ SAGA-ICM Workspace successfully initialized! Run "npm install" to configure dependencies.\x1b[0m\n');
+  console.log(`\n\x1b[32m✔ ${APP_NAME} Workspace successfully initialized! Run "npm install" to configure dependencies.\x1b[0m\n`);
 }
-
 
 function handleStatus() {
   printHeader('SAGA-ICM Stage Pipeline Status');
@@ -144,7 +164,7 @@ function printManuscriptStatus() {
   }
   let manifest;
   try {
-    manifest = JSON.parse(fs.readFileSync('manuscript.json', 'utf8'));
+    manifest = JSON.parse(readText('manuscript.json'));
   } catch (e) {
     console.error(`\nCould not parse manuscript.json: ${e.message}`);
     return;
@@ -157,7 +177,7 @@ function printManuscriptStatus() {
     let words = 0;
     const draft = (ch.draft_file || '').replace(/\//g, path.sep);
     if (draft && fs.existsSync(draft)) {
-      const raw = fs.readFileSync(draft, 'utf8');
+      const raw = readText(draft);
       words = (raw.match(/[\w'’-]+/g) || []).length;
     }
     totalWords += words;
@@ -170,18 +190,57 @@ function printManuscriptStatus() {
   const target = manifest.target_words ? ` / ${manifest.target_words.toLocaleString()} target` : '';
   console.log(`\n  Total: ${totalWords.toLocaleString()} words${target}`);
 
-  // Production loop: what's next?
   const next = chapters.find(ch => ch.status !== 'passed');
   if (!next) {
-    console.log('  \x1b[32mAll chapters passed — next action: Stage 05 compile (node scripts/saga.js compile)\x1b[0m');
+    console.log(`  \x1b[32mAll chapters passed — next action: Stage 05 compile (node scripts/${binName}.js compile)\x1b[0m`);
   } else {
     const action = {
       planned: `draft it (Stage 03 — beats: ${next.beat_file || 'n/a'})`,
-      drafted: `audit it (Stage 04 — node scripts/saga.js audit, then the rubric)`,
+      drafted: `audit it (Stage 04 — node scripts/${binName}.js audit, then the rubric)`,
       audited: `resolve findings and pass the Stage 04 gate`,
     }[next.status] || 'check its status value';
     console.log(`  Next action → chapter ${next.id}: ${action}`);
   }
+}
+
+function handleBrief() {
+  printHeader('SAGA-ICM Project Brief & Executive Summary');
+  if (!fs.existsSync('manuscript.json')) {
+    console.log('No manuscript.json found. Run Stage 01 onboarding or Stage 02 planning first.');
+    return;
+  }
+  let manifest;
+  try {
+    manifest = JSON.parse(readText('manuscript.json'));
+  } catch (e) {
+    console.error(`Could not parse manuscript.json: ${e.message}`);
+    return;
+  }
+  const chapters = manifest.chapters || [];
+  const statusCounts = { planned: 0, drafted: 0, audited: 0, passed: 0 };
+  let totalWords = 0;
+  chapters.forEach(c => {
+    statusCounts[c.status || 'planned'] = (statusCounts[c.status || 'planned'] || 0) + 1;
+    const draftPath = (c.draft_file || '').replace(/\//g, path.sep);
+    if (draftPath && fs.existsSync(draftPath)) {
+      const raw = readText(draftPath);
+      totalWords += (raw.match(/[\w'’-]+/g) || []).length;
+    }
+  });
+
+  console.log(`Title:        ${manifest.title || 'Untitled'}`);
+  console.log(`Author:       ${manifest.author || 'Author'}`);
+  console.log(`Target Words: ${manifest.target_words ? manifest.target_words.toLocaleString() : 'N/A'}`);
+  console.log(`Drafted:      ${totalWords.toLocaleString()} words (${manifest.target_words ? Math.round((totalWords / manifest.target_words) * 100) : 0}%)`);
+  console.log(`Chapters:     ${chapters.length} total [Passed: ${statusCounts.passed}, Audited: ${statusCounts.audited}, Drafted: ${statusCounts.drafted}, Planned: ${statusCounts.planned}]`);
+
+  // Check trackers
+  const trackerDir = path.join('stages', '02_planning', 'output', 'trackers');
+  if (fs.existsSync(trackerDir)) {
+    const trackers = fs.readdirSync(trackerDir).filter(f => f.endsWith('.md'));
+    console.log(`Trackers:     ${trackers.length} active tracker files in ${trackerDir}`);
+  }
+  console.log('');
 }
 
 function getFilesRecursive(dir) {
@@ -200,12 +259,118 @@ function getFilesRecursive(dir) {
   return results;
 }
 
-function handleWizard(type) {
+async function handleDiagnostic(subCmd, extraArgs = []) {
+  const diagMap = {
+    rhythm: 'prose_rhythm_diagnostic.js',
+    dialogue: 'dialogue_diagnostic.js',
+    tense: 'tense_slip_diagnostic.js',
+    sensory: 'sensory_anchor_diagnostic.js',
+    dread: 'dread_pacing_diagnostic.js',
+    lore: 'lore_density_diagnostic.js',
+    heatmap: 'character_heatmap_diagnostic.js',
+    resource: 'resource_consistency_diagnostic.js',
+    playbook: 'generate_curated_playbook.js',
+  };
+
+  if (!subCmd || subCmd === 'list' || subCmd === '--help' || subCmd === 'help') {
+    printHeader('SAGA-ICM Diagnostics Suite');
+    console.log(`
+Available diagnostics:
+  node scripts/${binName}.js diag audit [path]         Full AI prose tell & rhythm scan
+  node scripts/${binName}.js diag continuity [dir]     Proper noun & character continuity scan
+  node scripts/${binName}.js diag rhythm [chapter]     Sentence length standard deviation & cadence
+  node scripts/${binName}.js diag dialogue [chapter]   Speaker attribution & dialogue ratio
+  node scripts/${binName}.js diag tense [chapter]      Past vs. present tense consistency & slips
+  node scripts/${binName}.js diag sensory [chapter]    Sensory anchor density (visual/auditory/tactile)
+  node scripts/${binName}.js diag dread [chapter]      Dread pacing & sluggish suspense blocks
+  node scripts/${binName}.js diag lore [chapter]       Lore density & exposition info-dump scanner
+  node scripts/${binName}.js diag heatmap              Character presence & interaction matrix
+  node scripts/${binName}.js diag resource             Physical resource tracking
+  node scripts/${binName}.js diag playbook [chapter]   Generate curated revision playbook
+  node scripts/${binName}.js diag all [chapter]        Run all mechanical diagnostics sequentially
+    `);
+    return;
+  }
+
+  if (subCmd === 'audit') {
+    await handleAudit(extraArgs);
+    return;
+  }
+  if (subCmd === 'continuity') {
+    await handleContinuity(extraArgs);
+    return;
+  }
+
+  if (subCmd === 'all') {
+    printHeader('Running Full Diagnostic Suite');
+    console.log('\n--- 1. Narrative Prose Audit ---');
+    await handleAudit(extraArgs);
+    console.log('\n--- 2. Character & Proper-Noun Continuity ---');
+    await handleContinuity(extraArgs);
+
+    const sequence = ['rhythm', 'dialogue', 'tense', 'sensory', 'dread', 'lore'];
+    for (let i = 0; i < sequence.length; i++) {
+      const name = sequence[i];
+      console.log(`\n--- ${i + 3}. ${name.toUpperCase()} Diagnostic ---`);
+      const scriptFullPath = path.join(__dirname, diagMap[name]);
+      const child = fork(scriptFullPath, extraArgs);
+      await new Promise(res => child.on('close', res));
+    }
+    return;
+  }
+
+  const scriptFile = diagMap[subCmd];
+  if (!scriptFile) {
+    console.error(`Unknown diagnostic: "${subCmd}". Run "node scripts/${binName}.js diag" to see available tools.`);
+    return;
+  }
+
+  const scriptFullPath = path.join(__dirname, scriptFile);
+  const child = fork(scriptFullPath, extraArgs);
+  child.on('close', code => process.exit(code || 0));
+}
+
+function handleWizard(type, extraArgs = []) {
+  const wizardMap = {
+    onboard: 'onboard_wizard.js',
+    unstuck: 'unstuck_wizard.js',
+    brainstorm: 'brainstorm_wizard.js',
+    interview: 'interview_wizard.js',
+    heat: 'dialogue_heat_wizard.js',
+    bloom: 'sensory_bloom_wizard.js',
+    scene: 'stage_scene_wizard.js',
+    theme: 'theme_weaver_wizard.js',
+    'therefore-but': 'therefore_but_wizard.js',
+    wwxdu: 'wwxdu_wizard.js'
+  };
+
+  if (!type || type === 'list' || type === '--help' || type === 'help') {
+    printHeader('SAGA-ICM Creative Wizards');
+    console.log(`
+Available interactive wizards:
+  node scripts/${binName}.js wizard onboard [--blueprint=<name>]   Start novel onboarding session
+  node scripts/${binName}.js wizard unstuck                         Overcome writer's block (pacing, twists)
+  node scripts/${binName}.js wizard brainstorm                      Brainstorm premise & core tensions
+  node scripts/${binName}.js wizard interview                       Character deep-dive interrogation
+  node scripts/${binName}.js wizard heat                            Dialogue escalation & subtext intensifier
+  node scripts/${binName}.js wizard bloom                           Sensory expansion & setting viscosity
+  node scripts/${binName}.js wizard scene                           Scene staging & physical blocking
+  node scripts/${binName}.js wizard theme                           Theme weaver & subtle resonance
+  node scripts/${binName}.js wizard therefore-but                   Causal calculus ("Therefore / But" links)
+  node scripts/${binName}.js wizard wwxdu                           "What Would X Do Unexpectedly" subversion
+    `);
+    return;
+  }
+
+  const scriptFile = wizardMap[type];
+  if (!scriptFile) {
+    console.error(`Unknown wizard: "${type}". Run "node scripts/${binName}.js wizard" to see available wizards.`);
+    return;
+  }
+
+  const env = { ...process.env };
   if (type === 'onboard') {
-    // Resolve --blueprint=<name> into a setup/ file (dashes map to underscores,
-    // "_blueprint.md" suffix optional). Passed to the wizard via env var.
     const blueprintArg = args.find(a => a.startsWith('--blueprint='));
-    const env = { ...process.env };
     if (blueprintArg) {
       const name = blueprintArg.split('=')[1].replace(/-/g, '_');
       const candidates = [
@@ -217,25 +382,29 @@ function handleWizard(type) {
         console.error(`Blueprint not found. Tried: ${candidates.join(', ')}`);
         process.exit(1);
       }
+      env.SOUNDBOARD_BLUEPRINT = resolved;
+      env.SB_BLUEPRINT = resolved;
       env.SAGA_BLUEPRINT = resolved;
     }
-    const wizardProcess = fork(path.join('scripts', 'onboard_wizard.js'), [], { env });
-    wizardProcess.on('close', (code) => {
-      process.exit(code);
-    });
-  } else {
-    console.error(`Unknown wizard: ${type}. Available: onboard`);
   }
+
+  const scriptFullPath = path.join(__dirname, scriptFile);
+  const wizardProcess = fork(scriptFullPath, extraArgs, { env });
+  wizardProcess.on('close', (code) => {
+    process.exit(code || 0);
+  });
 }
 
-async function handleAudit() {
+async function handleAudit(customArgs) {
   const { runAudit } = await import('./narrative_audit.js');
-  runAudit(args.slice(1));
+  const auditArgs = customArgs !== undefined ? customArgs : args.slice(1);
+  runAudit(auditArgs);
 }
 
-async function handleContinuity() {
+async function handleContinuity(customArgs) {
   const { runContinuityScan } = await import('./continuity_scan.js');
-  runContinuityScan(args.slice(1));
+  const contArgs = customArgs !== undefined ? customArgs : args.slice(1);
+  runContinuityScan(contArgs);
 }
 
 async function handleCompile() {
@@ -243,9 +412,9 @@ async function handleCompile() {
   compileManuscript(args.slice(1));
 }
 
-// Parse a simple YAML frontmatter list block (e.g. "inputs:" / "templates:") from a contract.
 function parseFrontmatterList(content, key) {
-  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  const clean = content.replace(/^\uFEFF/, '');
+  const fm = clean.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!fm) return [];
   const lines = fm[1].split(/\r?\n/);
   const items = [];
@@ -255,17 +424,19 @@ function parseFrontmatterList(content, key) {
     if (inBlock) {
       const item = line.match(/^\s+-\s+(\S[^#]*?)\s*(#.*)?$/);
       if (item) items.push(item[1].trim());
-      else if (/^\S/.test(line)) inBlock = false; // next top-level key
+      else if (/^\S/.test(line)) inBlock = false;
     }
   }
   return items;
 }
 
-const PACKET_FILE_CAP = 48 * 1024; // per-file cap to keep packets consumable
+const PACKET_FILE_CAP = 48 * 1024;
+let totalPacketChars = 0;
 
 function emitPacketEntry(label, filePath) {
   console.log(`\n--- ${label}: ${filePath} ---`);
-  const raw = fs.readFileSync(filePath, 'utf8');
+  const raw = readText(filePath);
+  totalPacketChars += raw.length;
   if (raw.length > PACKET_FILE_CAP) {
     console.log(raw.slice(0, PACKET_FILE_CAP));
     console.log(`\n[TRUNCATED at ${PACKET_FILE_CAP} chars — read the file directly for the remainder: ${filePath}]`);
@@ -289,9 +460,8 @@ function handleRunStage(stageId) {
     process.exit(1);
   }
 
-  // Compile the stage packet: contract + declared inputs + declared templates,
-  // as one context block any executor (agent or API) can consume.
-  const contract = fs.readFileSync(contractPath, 'utf8');
+  totalPacketChars = 0;
+  const contract = readText(contractPath);
   console.log(`=== STAGE PACKET: ${matchingStage} ===`);
   emitPacketEntry('CONTRACT', contractPath);
 
@@ -316,7 +486,11 @@ function handleRunStage(stageId) {
     }
   }
 
-  console.log(`\n=== END PACKET: ${matchingStage} ===`);
+  const estTokens = Math.ceil(totalPacketChars / 4);
+  console.log(`\n=== END PACKET: ${matchingStage} (Est: ${estTokens.toLocaleString()} tokens / target: 2,000–8,000) ===`);
+  if (estTokens > 8000) {
+    console.log(`\x1b[33mWarning: Stage packet exceeds ICM recommended budget of 8,000 tokens (${estTokens.toLocaleString()} tokens).\x1b[0m`);
+  }
   if (missing.length) {
     console.log(`\nMissing inputs (produce these via the earlier stage, or proceed if the contract marks them optional):`);
     missing.forEach(m => console.log(`  ✗ ${m}`));
@@ -324,38 +498,399 @@ function handleRunStage(stageId) {
   console.log(`\nExecutor instructions: follow the CONTRACT's Process section. Write outputs to the exact paths its frontmatter declares, using the TEMPLATE structures where provided. Verify against the contract's Verification section before marking the stage complete.`);
 }
 
+function handlePackChapter(chId) {
+  if (!chId) {
+    console.error(`Error: Please specify a chapter number (e.g. node scripts/${binName}.js pack-chapter 1)`);
+    process.exit(1);
+  }
+
+  const num = parseInt(chId, 10);
+  const padNum = String(num).padStart(2, '0');
+  printHeader(`Chapter ${num} Context Kit Packaging`);
+
+  let totalKitChars = 0;
+  function emitKitSection(title, content) {
+    console.log(`--- ${title} ---`);
+    console.log(content.trim());
+    console.log('-------------------------------------------------------\n');
+    totalKitChars += content.length;
+  }
+
+  let manifest = null;
+  let chEntry = null;
+  if (fs.existsSync('manuscript.json')) {
+    try {
+      manifest = JSON.parse(readText('manuscript.json'));
+      if (Array.isArray(manifest.chapters)) {
+        chEntry = manifest.chapters.find(c => c.id === num);
+      }
+    } catch (e) {
+      console.warn(`Could not read manuscript.json: ${e.message}`);
+    }
+  }
+
+  // 1. Resolve Beat file from manuscript.json or conventions
+  let beatFile = null;
+  if (chEntry && chEntry.beat_file && fs.existsSync(chEntry.beat_file.replace(/\//g, path.sep))) {
+    beatFile = chEntry.beat_file.replace(/\//g, path.sep);
+  } else {
+    const candidates = [
+      path.join('stages', '02_planning', 'output', 'beats', `ch${padNum}.md`),
+      path.join('stages', '02_planning', 'output', 'beats', `ch${num}.md`),
+      path.join('stages', '02_planning', 'output', 'beats', `chapter_${padNum}_beats.md`),
+      path.join('stages', '02_planning', 'output', 'beats', `chapter_${num}_beats.md`)
+    ];
+    beatFile = candidates.find(c => fs.existsSync(c));
+  }
+
+  if (!beatFile) {
+    console.log(`\x1b[33mWarning: Beat file for Chapter ${num} not found.\x1b[0m`);
+  } else {
+    console.log(`\x1b[32m✔ Loaded Beats: ${beatFile}\x1b[0m\n`);
+    const beatContent = readText(beatFile);
+    emitKitSection('CHAPTER BEATS', beatContent);
+
+    const linkMatches = [...beatContent.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)];
+    if (linkMatches.length > 0) {
+      let entitySection = '';
+      linkMatches.forEach(match => {
+        const linkPath = match[2].replace(/\//g, path.sep);
+        const resolved = path.resolve(path.dirname(beatFile), linkPath);
+        if (fs.existsSync(resolved)) {
+          entitySection += `\n### Entity: ${match[1]} (${linkPath})\n` + readText(resolved).trim() + '\n';
+        }
+      });
+      if (entitySection) {
+        emitKitSection('RESOLVED ENTITY CONTEXT NODES', entitySection);
+      }
+    }
+  }
+
+  // 2. Mandatory Canon Facts (Layer 4)
+  const canonFile = path.join('stages', '02_planning', 'output', 'canon.md');
+  if (fs.existsSync(canonFile)) {
+    emitKitSection('ESTABLISHED CANON (Mandatory Facts)', readText(canonFile));
+  }
+
+  // 3. Structure Plan rows for this chapter
+  const structPlanFile = path.join('stages', '02_planning', 'output', 'structure_plan.md');
+  if (fs.existsSync(structPlanFile)) {
+    const spContent = readText(structPlanFile);
+    const spLines = spContent.split(/\r?\n/);
+    const relevantLines = spLines.filter(line => {
+      const match = line.match(/\|\s*(\d+)\s*\|/);
+      return match && parseInt(match[1], 10) === num;
+    });
+    if (relevantLines.length > 0) {
+      emitKitSection(`STRUCTURE PLAN CONTEXT (Ch ${num})`, relevantLines.join('\n'));
+    }
+  }
+
+  // 4. Character Arc Beats for this chapter
+  const arcsFile = path.join('stages', '02_planning', 'output', 'character_arcs.md');
+  if (fs.existsSync(arcsFile)) {
+    const arcsContent = readText(arcsFile);
+    const arcLines = arcsContent.split(/\r?\n/);
+    const chArcLines = arcLines.filter(line => new RegExp(`\\b(?:Ch|Chapter)\\s*0?${num}\\b`, 'i').test(line));
+    if (chArcLines.length > 0) {
+      emitKitSection(`SCHEDULED CHARACTER ARC BEATS (Ch ${num})`, chArcLines.join('\n'));
+    }
+  }
+
+  // 5. Voice Exemplars (Layer 4 vs Layer 3 Fix)
+  const exemplarsFile = path.join('stages', '02_planning', 'output', 'voice_exemplars.md');
+  if (fs.existsSync(exemplarsFile)) {
+    emitKitSection('VOICE EXEMPLARS (Layer 4 Anti-Drift Target)', readText(exemplarsFile));
+  } else {
+    const voiceFile = path.join('_config', 'voice.md');
+    if (fs.existsSync(voiceFile)) {
+      emitKitSection('DEFAULT VOICE GUIDE (Layer 3 Baseline)', readText(voiceFile));
+    }
+  }
+
+  // 6. Anti-drift calibration: Trailing ~500 words of previous chapter (clean without frontmatter)
+  if (num > 1) {
+    const prevNum = num - 1;
+    const prevPad = String(prevNum).padStart(2, '0');
+    let prevDraft = null;
+    if (manifest && Array.isArray(manifest.chapters)) {
+      const prevEntry = manifest.chapters.find(c => c.id === prevNum);
+      if (prevEntry && prevEntry.draft_file && fs.existsSync(prevEntry.draft_file.replace(/\//g, path.sep))) {
+        prevDraft = prevEntry.draft_file.replace(/\//g, path.sep);
+      }
+    }
+    if (!prevDraft) {
+      const candidates = [
+        path.join('stages', '03_drafting', 'output', 'chapters', `ch${prevPad}.md`),
+        path.join('stages', '03_drafting', 'output', 'chapters', `ch${prevNum}.md`),
+        path.join('stages', '03_drafting', 'output', 'chapters', `chapter_${prevPad}.md`),
+        path.join('stages', '03_drafting', 'output', 'chapters', `chapter_${prevNum}.md`)
+      ];
+      prevDraft = candidates.find(p => fs.existsSync(p));
+    }
+
+    if (prevDraft) {
+      let raw = readText(prevDraft);
+      raw = raw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
+      const paras = raw.split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
+      let tailWords = [];
+      for (let i = paras.length - 1; i >= 0; i--) {
+        const words = paras[i].split(/\s+/);
+        tailWords.unshift(...words);
+        if (tailWords.length >= 500) break;
+      }
+      const anchor = tailWords.slice(-500).join(' ');
+      emitKitSection(`PREVIOUS CHAPTER TRAILING ANCHOR (Ch ${prevNum})`, anchor);
+    }
+  }
+
+  const estTokens = Math.ceil(totalKitChars / 4);
+  console.log(`\x1b[32m✔ Context kit compiled successfully. Ready for Stage 03 drafting.\x1b[0m`);
+  console.log(`\x1b[1m[ICM Kit Budget: ~${estTokens.toLocaleString()} tokens / 6,000 target]\x1b[0m\n`);
+  if (estTokens > 6000) {
+    console.log(`\x1b[33mWarning: Chapter kit exceeds target 6,000 tokens (${estTokens.toLocaleString()} tokens). Consider trimming referenced entity descriptions.\x1b[0m\n`);
+  }
+}
+
+function handleOkfIndex() {
+  printHeader('Rebuilding OKF Catalogs');
+  const craftDir = path.join('_config', 'okf_craft');
+  if (fs.existsSync(craftDir)) {
+    const files = fs.readdirSync(craftDir).filter(f => f.endsWith('.md') && f !== 'index.md' && f !== 'CONTEXT.md');
+    let indexContent = `---\ntype: okf_index\ntitle: "Static Narrative Craft OKF Catalog"\nlast_indexed: ${new Date().toISOString().split('T')[0]}\n---\n\n# ${appName} Static Craft Knowledge Catalog\n\n`;
+    
+    files.forEach(f => {
+      const fullPath = path.join(craftDir, f);
+      const content = readText(fullPath);
+      let title = f;
+      const titleQuotedMatch = content.match(/title:\s*"([^"\r\n]+)"/) || content.match(/title:\s*'([^'\r\n]+)'/) || content.match(/title:\s*([^\r\n]+)/);
+      if (titleQuotedMatch) {
+        title = titleQuotedMatch[1].trim();
+      }
+      const typeMatch = content.match(/type:\s*([^\r\n]+)/);
+      const type = typeMatch ? typeMatch[1].trim() : 'uncategorized';
+      indexContent += `- [${title}](${f}) — \`type: ${type}\`\n`;
+    });
+
+    fs.writeFileSync(path.join(craftDir, 'index.md'), indexContent, 'utf8');
+    console.log(`  ✔ Rebuilt static craft index at ${path.join(craftDir, 'index.md')}`);
+  }
+}
+
+function handleOkfLint() {
+  printHeader('OKF Knowledge Bundle Linter');
+  const craftDir = path.join('_config', 'okf_craft');
+  if (!fs.existsSync(craftDir)) {
+    console.error('No _config/okf_craft directory found.');
+    process.exit(1);
+  }
+  const files = fs.readdirSync(craftDir).filter(f => f.endsWith('.md'));
+  let totalErrors = 0;
+  let totalBoms = 0;
+  let oversized = 0;
+
+  files.forEach(f => {
+    const fullPath = path.join(craftDir, f);
+    const buf = fs.readFileSync(fullPath);
+    if (buf[0] === 0xef && buf[1] === 0xbb && buf[2] === 0xbf) {
+      console.log(`  \x1b[31m✗ BOM detected:\x1b[0m ${f}`);
+      totalBoms++;
+    }
+    const text = buf.toString('utf8').replace(/^\uFEFF/, '');
+    if (f === 'index.md' || f === 'CONTEXT.md' || f === 'SPECIFICATION.md') return;
+
+    // Check frontmatter
+    const hasFm = /^---\r?\n[\s\S]*?\r?\n---/.test(text);
+    if (!hasFm) {
+      console.log(`  \x1b[31m✗ Missing YAML frontmatter:\x1b[0m ${f}`);
+      totalErrors++;
+    }
+
+    const words = (text.match(/[\w'’-]+/g) || []).length;
+    if (words > 750) {
+      oversized++;
+    }
+  });
+
+  console.log(`Checked ${files.length} craft modules.`);
+  console.log(`BOMs: ${totalBoms}, Format errors: ${totalErrors}, Oversized modules (>750w): ${oversized}`);
+  if (totalBoms > 0 || totalErrors > 0) {
+    console.log('\x1b[31mFAIL: OKF lint failed.\x1b[0m\n');
+    process.exit(1);
+  } else {
+    console.log('\x1b[32m✔ OKF bundle is clean and valid!\x1b[0m\n');
+  }
+}
+
+const CRAFT_SYNONYMS = {
+  'sagging middle': ['murch_rule_of_six_pacing', 'thriller_escalation_pacing', 'story_grid_macro'],
+  'slow pacing': ['thriller_escalation_pacing', 'swain_mru_and_pacing_velocity_equations'],
+  'flat dialogue': ['three_registers_of_dialogue_subtext', 'voice_differentiation_across_ensemble'],
+  'exposition': ['primitive_epistemic_asymmetry', 'lore_density_diagnostic'],
+  'middle book': ['series_architecture_and_cross_book_arcs'],
+  'short story': ['short_story_form_and_single_effect'],
+  'novella': ['novella_form_and_compressed_turn'],
+  'cliffhanger': ['chapter_architecture_and_ending_hooks', 'hitchcock_bomb_suspense'],
+};
+
+function handleCraftSearch(searchArgs) {
+  const isJson = searchArgs.includes('--json');
+  const terms = searchArgs.filter(a => a !== '--json' && a !== 'search');
+  const query = terms.join(' ').trim();
+  
+  if (!query) {
+    console.log(`\x1b[33mUsage: node scripts/${binName}.js craft search <query> [--json]\x1b[0m`);
+    return;
+  }
+  
+  const craftDir = path.join('_config', 'okf_craft');
+  if (!fs.existsSync(craftDir)) {
+    console.error(`Craft directory not found at ${craftDir}`);
+    return;
+  }
+  
+  const files = fs.readdirSync(craftDir).filter(f => f.endsWith('.md') && f !== 'index.md');
+  const queryLower = query.toLowerCase();
+  const queryWords = queryLower.split(/\s+/).filter(w => w.length > 1);
+  const results = [];
+  
+  files.forEach(f => {
+    const fullPath = path.join(craftDir, f);
+    const content = readText(fullPath);
+    const titleMatch = content.match(/title:\s*"([^"\r\n]+)"/) || content.match(/title:\s*'([^'\r\n]+)'/) || content.match(/title:\s*([^\r\n]+)/);
+    const title = titleMatch ? titleMatch[1].trim() : f;
+    const typeMatch = content.match(/type:\s*([^\r\n]+)/);
+    const type = typeMatch ? typeMatch[1].trim() : 'uncategorized';
+
+    const keywordsMatch = content.match(/keywords:\s*\[([^\]]+)\]/);
+    const keywords = keywordsMatch ? keywordsMatch[1].toLowerCase() : '';
+    
+    let score = 0;
+    const lowerTitle = title.toLowerCase();
+    const lowerContent = content.toLowerCase();
+    const lowerFile = f.toLowerCase();
+    
+    if (lowerTitle.includes(queryLower)) score += 30;
+    if (lowerFile.includes(queryLower.replace(/\s+/g, '_'))) score += 25;
+    if (keywords.includes(queryLower)) score += 35; // 3x keyword boost
+    if (lowerContent.includes(queryLower)) score += 15;
+    
+    // Check synonym expansions
+    for (const [synonym, targets] of Object.entries(CRAFT_SYNONYMS)) {
+      if (queryLower.includes(synonym) && targets.some(t => lowerFile.includes(t))) {
+        score += 40;
+      }
+    }
+
+    queryWords.forEach(w => {
+      if (lowerTitle.includes(w)) score += 8;
+      if (keywords.includes(w)) score += 12;
+      if (lowerFile.includes(w)) score += 5;
+      const count = (lowerContent.match(new RegExp(`\\b${w}`, 'gi')) || []).length;
+      score += Math.min(count, 10);
+    });
+    
+    if (score > 0) {
+      const lines = content.split('\n');
+      let summary = '';
+      for (const line of lines) {
+        if (line.trim().startsWith('# ') || line.trim().startsWith('---') || line.trim().length === 0) continue;
+        if (!line.includes(':') && line.length > 20) {
+          summary = line.trim();
+          break;
+        }
+      }
+      results.push({
+        file: f,
+        path: path.join(craftDir, f).replace(/\\/g, '/'),
+        title,
+        type,
+        score,
+        summary: summary.slice(0, 160) + (summary.length > 160 ? '...' : '')
+      });
+    }
+  });
+  
+  results.sort((a, b) => b.score - a.score);
+  const topResults = results.slice(0, 8);
+  
+  if (isJson) {
+    console.log(JSON.stringify(topResults, null, 2));
+    return;
+  }
+  
+  printHeader(`${APP_NAME} Craft Search: "${query}" (${results.length} matches found)`);
+  if (topResults.length === 0) {
+    console.log(`  No matching craft modules found for "${query}".\n`);
+    return;
+  }
+  
+  topResults.forEach((r, idx) => {
+    console.log(`  \x1b[36m${idx + 1}. [${r.title}]\x1b[0m (${r.type})`);
+    console.log(`     \x1b[90mPath: ${r.path}\x1b[0m`);
+    if (r.summary) {
+      console.log(`     \x1b[37m${r.summary}\x1b[0m`);
+    }
+    console.log('');
+  });
+}
+
 function showHelp() {
   console.log(`
-SAGA-ICM novel engineering CLI
+${APP_NAME} novel engineering CLI
 
 Usage:
-  node scripts/saga.js init                   Scaffold template files into a new project directory
-  node scripts/saga.js status                 Show the status of each pipeline stage
-  node scripts/saga.js wizard onboard         Start the interactive onboarding session
-                       [--blueprint=<name>]   Pick a setup/ questionnaire (default: comfort-scifi)
-  node scripts/saga.js run-stage <stage_id>   Compile the stage packet (contract + declared inputs +
-                                              templates) for the executing agent or API pipeline
-  node scripts/saga.js audit [path ...]       Scan chapters for AI prose tells (default: stage 03 output);
-                                              writes reports to stages/04_diagnostics_edits/output/reports/
-  node scripts/saga.js continuity [dir]       Scan chapters for name inconsistencies (near-duplicate /
-                                              orphaned proper nouns) feeding the canon check
-  node scripts/saga.js compile [--all]        Compile passed chapters into manuscript.html (+ .epub via
-                                              pandoc); --all ignores the Stage 04 gate
+  node scripts/${BIN_NAME}.js init [folder]          Scaffold a self-contained novel workspace in [folder]
+  node scripts/${BIN_NAME}.js status                 Show the status of each pipeline stage
+  node scripts/${BIN_NAME}.js brief                  Executive summary of manuscript progress & state
+  node scripts/${BIN_NAME}.js craft search <query>   Search craft modules in _config/okf_craft/
+  node scripts/${BIN_NAME}.js okf-lint              Validate all craft modules against ICM standards
+  node scripts/${BIN_NAME}.js diag [name] [args]     Run diagnostic tools (rhythm, dialogue, tense, etc.)
+  node scripts/${BIN_NAME}.js wizard [name] [args]   Run creative wizards (onboard, unstuck, heat, etc.)
+  node scripts/${BIN_NAME}.js run-stage <stage_id>   Compile the stage packet for the executing agent
+  node scripts/${BIN_NAME}.js pack-chapter <N>       Assemble token-disciplined drafting kit for Chapter N
+  node scripts/${BIN_NAME}.js okf-index              Rebuild index.md catalogs for OKF knowledge bundles
+  node scripts/${BIN_NAME}.js audit [path ...]       Scan chapters for AI prose tells
+  node scripts/${BIN_NAME}.js continuity [dir]       Scan chapters for proper-noun consistency
+  node scripts/${BIN_NAME}.js compile [--all]        Compile passed chapters into manuscript.html (+ .epub via pandoc)
   `);
 }
 
 switch (command) {
   case 'init':
-    handleInit();
+    handleInit(subCommand);
     break;
   case 'status':
     handleStatus();
     break;
+  case 'brief':
+  case 'resume':
+    handleBrief();
+    break;
+  case 'craft':
+    handleCraftSearch(args.slice(1));
+    break;
+  case 'okf-lint':
+  case 'lint':
+    handleOkfLint();
+    break;
+  case 'diag':
+  case 'diagnostic':
+  case 'diagnostics':
+    handleDiagnostic(subCommand, args.slice(2));
+    break;
   case 'wizard':
-    handleWizard(subCommand);
+  case 'wizards':
+    handleWizard(subCommand, args.slice(2));
     break;
   case 'run-stage':
     handleRunStage(subCommand || args[2]);
+    break;
+  case 'pack-chapter':
+    handlePackChapter(subCommand || args[1]);
+    break;
+  case 'okf-index':
+    handleOkfIndex();
     break;
   case 'audit':
     handleAudit();

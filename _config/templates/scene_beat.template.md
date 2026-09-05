@@ -34,6 +34,6 @@ last_modified: [YYYY-MM-DD]
 
 ## Content
 - **Scene goal / conflict / disaster:**
-- **Characters on stage:**
-- **Location(s):**
+- **Characters on stage:** [Link to character profiles, e.g. [Elena](../../../01_onboarding/output/characters/elena.md)]
+- **Location(s):** [Link to setting/world bible sections]
 - **Key reveals (and what stays withheld):**

@@ -1,0 +1,28 @@
+name: Soundboard Audit & Catalog Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Test Suite
+        run: npm test
+
+      - name: Verify No OKF Catalog Drift
+        run: |
+          npm run okf-index
+          git diff --exit-code _config/okf_craft/index.md

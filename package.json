@@ -4,7 +4,20 @@
   "description": "Portable, token-efficient novel engineering system using Interpretable Context Methodology and Open Knowledge Format",
   "type": "module",
   "bin": {
-    "saga": "./scripts/saga.js"
+    "saga": "./scripts/saga.js",
+    "soundboard": "./scripts/saga.js",
+    "sb": "./scripts/saga.js"
+  },
+  "scripts": {
+    "status": "node ./scripts/saga.js status",
+    "brief": "node ./scripts/saga.js brief",
+    "okf-index": "node ./scripts/saga.js okf-index",
+    "okf-lint": "node ./scripts/saga.js okf-lint",
+    "audit": "node ./scripts/saga.js audit",
+    "test": "node ./tests/run_tests.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "author": "Richard Elder & Antigravity",
   "license": "MIT",
