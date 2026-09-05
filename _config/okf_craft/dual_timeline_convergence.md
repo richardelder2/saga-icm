@@ -1,9 +1,17 @@
 ---
 type: craft_structure
-id: dual-timeline-convergence
+id: dual_timeline_convergence
 title: "Dual Timeline Convergence: The Interlocking Mystery of Past & Present"
-source_provenance: "Adapted from C:/Users/richa/wiki/wiki/plot-structures/dual-timeline.md"
-last_modified: 2026-09-04
+last_modified: 2026-09-05
+stages: [02_planning, 04_diagnostics_edits]
+genres: []
+scope: book
+subtype: narrative_mode
+confidence: practitioner_method
+provides: [dual_timeline_sync, historical_braiding]
+requires: [nonlinear_timeline_framework]
+diagnostics: [continuity]
+keywords: ["dual timeline", "past and present", "timeline convergence", "braided narrative"]
 ---
 
 # Dual Timeline Convergence

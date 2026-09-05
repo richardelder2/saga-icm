@@ -1,9 +1,18 @@
 ---
 type: craft_structure
-id: story-grid-macro
+id: story_grid_macro
 title: "Story Grid 5 Core Primal Shifts"
 academic_basis: "Coydon & McKee Classical Dramaturgy"
-last_modified: 2026-09-04
+last_modified: 2026-09-05
+stages: [01_onboarding, 02_planning]
+genres: []
+scope: book
+subtype: plot_template
+confidence: practitioner_method
+provides: [macro_foolscap, three_movements_fifteen_commandments]
+requires: [scene_level_five_commandments_coyne]
+diagnostics: [narrative_audit]
+keywords: ["Story Grid", "macro structure", "beginning middle end", "Shawn Coyne", "controlling idea"]
 ---
 
 # Story Grid Core Macro Architecture

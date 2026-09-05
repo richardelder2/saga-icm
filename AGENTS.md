@@ -19,7 +19,7 @@ Five stages, each with a `CONTEXT.md` contract declaring inputs, outputs, and pr
 
 | Stage | Purpose |
 |---|---|
-| `stages/01_onboarding/` | Interview the author; produce preferences, world bible, characters, filled genre bible + trope stack |
+| `stages/01_onboarding/` | Interview the author; produce preferences, world bible, characters, filled genre bible + trope stack, tell allowlist |
 | `stages/02_planning/` | Foolscap page → outline → structure plan (obligatory-scene ledger + authenticity dials) → scene beats |
 | `stages/03_drafting/` | Draft chapters against beats, voice guide, and authenticity prose rules |
 | `stages/04_diagnostics_edits/` | Mechanical + judgment audits; revision playbooks; route failures back |
@@ -75,7 +75,7 @@ Rules for series work:
 
 ## Agent-led onboarding (no API key needed)
 
-When the user asks to start a new novel/project, DO NOT tell them to run the terminal wizard — run the interview yourself in chat, per `stages/01_onboarding/CONTEXT.md` Path A: ask the blueprint questions one at a time, play the encouraging domain-expert coach between answers, then perform trope discovery from `setup/genre_bibles/INDEX.md` and write the exact output artifacts the contract specifies. The terminal wizard (`node scripts/saga.js wizard onboard`) is the fallback for users working outside an agent harness.
+When the user asks to start a new novel/project, DO NOT tell them to run the terminal wizard — run the interview yourself in chat, per `stages/01_onboarding/CONTEXT.md` Path A: ask the blueprint questions one at a time, play the encouraging domain-expert coach between answers, then perform trope discovery from `setup/genre_bibles/INDEX.md`, seed `stages/01_onboarding/output/tell_allowlist.md` for in-world vocabulary/motifs, and write the exact output artifacts the contract specifies. The terminal wizard (`node scripts/saga.js wizard onboard`) is the fallback for users working outside an agent harness.
 
 ## Non-negotiable craft rules
 

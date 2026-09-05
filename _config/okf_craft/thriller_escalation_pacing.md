@@ -1,9 +1,17 @@
 ---
 type: craft_structure
-id: thriller-escalation-pacing
+id: thriller_escalation_pacing
 title: "Thriller Escalation: Reversals, False Relief & Pacing Loops"
-source_provenance: "Adapted from C:/Users/richa/wiki/wiki/plot-structures/thriller-pacing.md"
-last_modified: 2026-09-04
+last_modified: 2026-09-05
+stages: [02_planning, 03_drafting]
+genres: [thriller_suspense]
+scope: book
+subtype: pacing_rhythm
+confidence: practitioner_method
+provides: [pressure_escalation, ticking_clock_acceleration]
+requires: [hitchcock_bomb_suspense]
+diagnostics: [dread]
+keywords: ["thriller pacing", "escalation contour", "ticking clock", "danger compression"]
 ---
 
 # Thriller Escalation & Compression Pacing

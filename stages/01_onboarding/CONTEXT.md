@@ -10,8 +10,10 @@ outputs:
   - stages/01_onboarding/output/bible/world_bible.md
   - stages/01_onboarding/output/bible/genre_bible.md
   - stages/01_onboarding/output/characters/
+  - stages/01_onboarding/output/tell_allowlist.md
 templates:
   - _config/templates/character.template.md
+  - _config/templates/tell_allowlist.template.md
 ---
 
 # Stage 01: Onboarding Context

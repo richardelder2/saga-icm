@@ -1,9 +1,17 @@
 ---
 type: craft_structure
-id: nonlinear-timeline-framework
+id: nonlinear_timeline_framework
 title: "Nonlinear Timelines, Anachrony & Information Delay"
-source_provenance: "Adapted from C:/Users/richa/wiki/wiki/plot-structures/nonlinear-timeline-framework.md"
-last_modified: 2026-09-04
+last_modified: 2026-09-05
+stages: [02_planning, 04_diagnostics_edits]
+genres: []
+scope: book
+subtype: narrative_mode
+confidence: peer_reviewed
+provides: [anachrony_mapping, delayed_disclosure]
+requires: [chekhovs_gun_and_plant_payoff]
+diagnostics: [continuity]
+keywords: ["nonlinear timeline", "anachrony", "flashbacks", "prolepsis", "analepsis"]
 ---
 
 # Nonlinear Timelines: The Architecture of Anachrony
