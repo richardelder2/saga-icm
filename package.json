@@ -4,9 +4,9 @@
   "description": "Portable, token-efficient novel engineering system using Interpretable Context Methodology and Open Knowledge Format",
   "type": "module",
   "bin": {
-    "saga": "./scripts/saga.js",
-    "soundboard": "./scripts/saga.js",
-    "sb": "./scripts/saga.js"
+    "soundboard": "./scripts/soundboard.js",
+    "sb": "./scripts/soundboard.js",
+    "saga": "./scripts/saga.js"
   },
   "scripts": {
     "status": "node ./scripts/saga.js status",
