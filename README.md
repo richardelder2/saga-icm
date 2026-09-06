@@ -2,12 +2,18 @@
 ### The Author's Intelligent Sounding Board & Novel Engineering Studio
 *Powered by the SAGA Pipeline & Interpretable Context Methodology (ICM)*
 
-[![CI Status](https://img.shields.io/github/actions/workflow/status/richardelder2/saga-icm/audit.yml?branch=main&label=CI%20Audit&logo=github)](https://github.com/richardelder2/saga-icm/actions)
-[![Zero Runtime Dependencies](https://img.shields.io/badge/dependencies-0%20runtime-brightgreen.svg)](package.json)
-[![Node Version](https://img.shields.io/badge/node-%3E%3D18-blue.svg)](package.json)
-[![Methodology](https://img.shields.io/badge/methodology-ICM%20(arXiv%3A2603.16021)-orange.svg)](https://arxiv.org/abs/2603.16021)
-[![Craft Bundle](https://img.shields.io/badge/OKF%20Craft-92%20modules-blueviolet.svg)](_config/okf_craft/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<p align="center">
+  <img src="assets/soundboard_hero_banner.jpg" alt="Soundboard — Novel Engineering Studio &amp; Intelligent Author Sounding Board" width="100%" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/richardelder2/saga-icm/actions"><img src="https://img.shields.io/github/actions/workflow/status/richardelder2/saga-icm/audit.yml?branch=main&amp;label=CI%20Audit&amp;logo=github" alt="CI Status" /></a>
+  <a href="package.json"><img src="https://img.shields.io/badge/dependencies-0%20runtime-brightgreen.svg" alt="Zero Runtime Dependencies" /></a>
+  <a href="package.json"><img src="https://img.shields.io/badge/node-%3E%3D18-blue.svg" alt="Node Version" /></a>
+  <a href="https://arxiv.org/abs/2603.16021"><img src="https://img.shields.io/badge/methodology-ICM%20(arXiv%3A2603.16021)-orange.svg" alt="Methodology" /></a>
+  <a href="_config/okf_craft/"><img src="https://img.shields.io/badge/OKF%20Craft-92%20modules-blueviolet.svg" alt="Craft Bundle" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
+</p>
 
 ---
 
@@ -23,20 +29,9 @@ Most AI writing tools act like chaotic autocomplete engines: they generate gener
 
 ## The 5-Stage Production Pipeline
 
-```
-  ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
-  │ 01 · ONBOARDING │ ───>  │  02 · PLANNING  │ ───>  │  03 · DRAFTING  │
-  │ World / Cast    │       │ Foolscap / Beats│       │ Canon & Voice   │
-  │ Tropes / Bible  │       │ Manuscript.json │       │ Calibrated Prose│
-  └─────────────────┘       └─────────────────┘       └────────┬────────┘
-                                                               │
-                                                               ▼
-  ┌─────────────────┐                                 ┌─────────────────┐
-  │ 05 · PUBLISHING │ <────────────────────────────── │ 04 · DIAGNOSTIC │
-  │ HTML & EPUB     │          (Passes All            │ Tells & Rhythm  │
-  │ Gate Protected  │          4 Gate Audits)         │ Continuity / POV│
-  └─────────────────┘                                 └─────────────────┘
-```
+<p align="center">
+  <img src="assets/pipeline_workflow.svg" alt="Soundboard 5-Stage Production Pipeline Flowchart" width="100%" />
+</p>
 
 | Stage | What It Produces | Non-Negotiable Contract |
 |---|---|---|
@@ -67,32 +62,19 @@ Soundboard defends against both levels:
 
 ## Live Console Telemetry
 
-Soundboard includes zero-dependency mechanical CLI tools that report transparent project status without requiring an API key:
+Soundboard includes zero-dependency mechanical CLI tools that report transparent project status, track chapter gates, and surface real-time telemetry:
 
-```
-$ soundboard status
+<p align="center">
+  <img src="assets/terminal_status.svg" alt="Soundboard Status Console Telemetry" width="100%" />
+</p>
 
-==================================================
-        SAGA-ICM Novel Engineering Console
-==================================================
+### Automated 4-Gate Quality Verification
 
-Book: The Obsidian Threshold
-Genre: Epic Fantasy / Grimdark | Form: Novel (Target: 85,000w)
+Before any chapter can compile into the finished manuscript, it must clear 4 machine-audited gates checking prose cadence, AI tell density, canon consistency, and structural POV adherence:
 
-Pipeline Gate:
-  [✔] 01 Onboarding   — COMPLETE
-  [✔] 02 Planning     — COMPLETE (18 chapters ledgered)
-  [▶] 03 Drafting     — ACTIVE (Chapter 4 in progress)
-  [ ] 04 Diagnostics  — PENDING
-  [ ] 05 Publishing   — LOCKED
-
-Production Ledger:
-  Ch 01  The Ash Gate          2,450w  [PASSED]  Gate: 4/4 checks clear
-  Ch 02  The Salt Road         2,890w  [PASSED]  Gate: 4/4 checks clear
-  Ch 03  Whispers in Iron      2,120w  [AUDITED] Revision playbook active
-  Ch 04  The Broken Seal       1,950w  [DRAFTED] Pack kit: ~736 tokens
-  Ch 05  Council of Knives         0w  [PLANNED] Entities: [Dov, Mara, Citadel]
-```
+<p align="center">
+  <img src="assets/terminal_audit.svg" alt="Soundboard Narrative Audit Console" width="100%" />
+</p>
 
 ---
 
