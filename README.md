@@ -1,10 +1,9 @@
-# Soundboard ✍️🎹
-### The Author's Intelligent Sounding Board & Novel Engineering Studio
-*Powered by the SAGA Pipeline & Interpretable Context Methodology (ICM)*
-
 <p align="center">
-  <img src="assets/soundboard_hero_banner.jpg" alt="Soundboard — Novel Engineering Studio &amp; Intelligent Author Sounding Board" width="100%" />
+  <img src="assets/soundboard_logo.png" alt="Soundboard — Narrative Production Studio" width="480" />
 </p>
+
+<h3 align="center">The Author's Intelligent Sounding Board &amp; Novel Engineering Studio</h3>
+<p align="center"><em>Powered by the SAGA Pipeline &amp; Interpretable Context Methodology (ICM)</em></p>
 
 <p align="center">
   <a href="https://github.com/richardelder2/saga-icm/actions"><img src="https://img.shields.io/github/actions/workflow/status/richardelder2/saga-icm/audit.yml?branch=main&amp;label=CI%20Audit&amp;logo=github" alt="CI Status" /></a>
@@ -24,6 +23,10 @@ Most AI writing tools act like chaotic autocomplete engines: they generate gener
 **Soundboard** turns high-level agent harnesses (**Claude Code, Google Antigravity, Cursor, Gemini CLI**) into an **Executive Novel Writing Concierge**. Built on the **Interpretable Context Methodology (ICM)** and plain-text markdown contracts, Soundboard organizes novel production across 5 disciplined stages—enforcing strict token limits, canonical continuity, voice consistency, and machine-checkable quality gates.
 
 > **Zero framework lock-in.** Plain markdown files, cwd-relative project isolation, zero vector databases, and zero runtime dependencies (`dependencies: {}`).
+
+<p align="center">
+  <img src="assets/soundboard_hero_banner.jpg" alt="Soundboard Studio Workstation" width="100%" />
+</p>
 
 ---
 
