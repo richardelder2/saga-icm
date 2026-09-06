@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const BIN_NAME = path.basename(process.argv[1], '.js') || 'soundboard';
-const APP_NAME = BIN_NAME === 'saga' ? 'SAGA-ICM' : 'Soundboard';
+const APP_NAME = 'Soundboard';
 
 export function readText(p) {
   return fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, '');

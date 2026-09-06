@@ -9,11 +9,11 @@
     "saga": "./scripts/saga.js"
   },
   "scripts": {
-    "status": "node ./scripts/saga.js status",
-    "brief": "node ./scripts/saga.js brief",
-    "okf-index": "node ./scripts/saga.js okf-index",
-    "okf-lint": "node ./scripts/saga.js okf-lint",
-    "audit": "node ./scripts/saga.js audit",
+    "status": "node ./scripts/soundboard.js status",
+    "brief": "node ./scripts/soundboard.js brief",
+    "okf-index": "node ./scripts/soundboard.js okf-index",
+    "okf-lint": "node ./scripts/soundboard.js okf-lint",
+    "audit": "node ./scripts/soundboard.js audit",
     "test": "node ./tests/run_tests.js"
   },
   "engines": {
