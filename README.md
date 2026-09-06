@@ -1,75 +1,177 @@
-# SAGA-ICM — Novel Engineering Workspace
+# Soundboard ✍️🎹
+### The Author's Intelligent Sounding Board & Novel Engineering Studio
+*Powered by the SAGA Pipeline & Interpretable Context Methodology (ICM)*
 
-A portable, token-efficient system for writing novels with AI co-authors, built on the Interpretable Context Methodology (ICM): plain markdown contracts, staged folders, and mechanical CLI tools. No framework lock-in — any agent (Claude Code, Antigravity, etc.) that can read files can run the pipeline.
+[![CI Status](https://img.shields.io/github/actions/workflow/status/richardelder2/saga-icm/audit.yml?branch=main&label=CI%20Audit&logo=github)](https://github.com/richardelder2/saga-icm/actions)
+[![Zero Runtime Dependencies](https://img.shields.io/badge/dependencies-0%20runtime-brightgreen.svg)](package.json)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D18-blue.svg)](package.json)
+[![Methodology](https://img.shields.io/badge/methodology-ICM%20(arXiv%3A2603.16021)-orange.svg)](https://arxiv.org/abs/2603.16021)
+[![Craft Bundle](https://img.shields.io/badge/OKF%20Craft-92%20modules-blueviolet.svg)](_config/okf_craft/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## The pipeline
+---
 
-| Stage | Folder | Produces |
+## What is Soundboard?
+
+Most AI writing tools act like chaotic autocomplete engines: they generate generic, formulaic chapters, hallucinate previously established eye colors, and collapse into melodramatic exposition by Chapter 5.
+
+**Soundboard** turns high-level agent harnesses (**Claude Code, Google Antigravity, Cursor, Gemini CLI**) into an **Executive Novel Writing Concierge**. Built on the **Interpretable Context Methodology (ICM)** and plain-text markdown contracts, Soundboard organizes novel production across 5 disciplined stages—enforcing strict token limits, canonical continuity, voice consistency, and machine-checkable quality gates.
+
+> **Zero framework lock-in.** Plain markdown files, cwd-relative project isolation, zero vector databases, and zero runtime dependencies (`dependencies: {}`).
+
+---
+
+## The 5-Stage Production Pipeline
+
+```
+  ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+  │ 01 · ONBOARDING │ ───>  │  02 · PLANNING  │ ───>  │  03 · DRAFTING  │
+  │ World / Cast    │       │ Foolscap / Beats│       │ Canon & Voice   │
+  │ Tropes / Bible  │       │ Manuscript.json │       │ Calibrated Prose│
+  └─────────────────┘       └─────────────────┘       └────────┬────────┘
+                                                               │
+                                                               ▼
+  ┌─────────────────┐                                 ┌─────────────────┐
+  │ 05 · PUBLISHING │ <────────────────────────────── │ 04 · DIAGNOSTIC │
+  │ HTML & EPUB     │          (Passes All            │ Tells & Rhythm  │
+  │ Gate Protected  │          4 Gate Audits)         │ Continuity / POV│
+  └─────────────────┘                                 └─────────────────┘
+```
+
+| Stage | What It Produces | Non-Negotiable Contract |
 |---|---|---|
-| 1. Onboarding | `stages/01_onboarding/` | preferences, world bible, character seeds, **filled genre bible + trope stack** |
-| 2. Planning | `stages/02_planning/` | **foolscap page**, outline, **structure plan**, canon + voice exemplars, **manuscript.json production ledger**, scene beats |
-| 3. Drafting | `stages/03_drafting/` | chapter prose (canon-consistent, voice-calibrated) |
-| 4. Diagnostics & Edits | `stages/04_diagnostics_edits/` | audit + continuity reports, revision playbooks, the pass gate |
-| 5. Publishing | `stages/05_publishing/` | HTML / EPUB manuscript (`saga compile`, gated on passed chapters) |
+| **01 · Onboarding** | Story Bible, Character Cast, Filled Genre Bible & Trope Stack | Creative discovery interview; seeds the in-world tell allowlist. |
+| **02 · Planning** | Foolscap Page, Outline, Structure Plan, Scene Beats, `manuscript.json` | Schedules obligatory trope scenes and sets structural authenticity dials. |
+| **03 · Drafting** | Canon-consistent, voice-calibrated chapter prose | Packs chapter kits with trailing voice anchors to prevent drift. |
+| **04 · Diagnostics** | Mechanical scans, continuity audits, 4-gate verification | Density-normalized AI tell checks, 4-gram repetition detection, and revision playbooks. |
+| **05 · Publishing** | Clean HTML / EPUB compilation | Refuses to compile any chapter that has not passed all 4 gate checks. |
 
-Each stage has a `CONTEXT.md` contract declaring its inputs, outputs, and process, with output skeletons in `_config/templates/` so every executor produces identical artifacts. Planning starts from a **foolscap page** (Story Grid / Pressfield): the whole book on one sheet before any outline exists.
+---
 
-## Built for agent harnesses
+## Why Soundboard Novels Read Better (The Science)
 
-This system is designed to be driven by a high-level coding agent — Claude Code, Codex, Antigravity, Gemini CLI, Hermes, Pi, or similar. **`AGENTS.md` is the canonical instruction set** (`CLAUDE.md`/`GEMINI.md` are pointers to it); point your agent at the repo and it knows the rules. The agent IS the model: it runs the onboarding interview in chat, plans, drafts, and audits directly — **no API key required**. Two conveniences:
+Research on synthetic narrative detection (*StoryScope*, arXiv:2604.03136) demonstrates that AI-generated stories remain detectable at **~94% accuracy from narrative structure alone**—not just cliché vocabulary.
 
-- `node scripts/saga.js run-stage <id>` compiles a **stage packet** — the contract plus every declared input and template in one block — for the agent (or an API pipeline) to consume.
-- The mechanical tools (`audit`, `status`, `init`) never call a model at all.
+AI stories fail because of structural tells:
+* Unearned character transformations without psychological resistance.
+* Uniform scene resolutions where every conflict ends cleanly.
+* Single-track plots lacking parallel subplots or thematic foils.
+* Narrators who state the theme out loud instead of dramatizing it.
 
-External model APIs (local Ollama, OpenRouter, Gemini — see `LOCAL_SETUP.md`) remain available as a secondary executor for the terminal wizard and headless/batch runs.
+Soundboard defends against both levels:
+1. **At Planning Time (Stage 02):** Forces human-typical narrative architecture—nonlinear disclosure, moral ambiguity, 4-corner opposition, and Swain MRU pacing equations.
+2. **At Drafting Time (Stage 03):** Calibrates every scene against 92 peer-reviewed craft modules from Shawn Coyne (*Story Grid*), John Truby (*Anatomy of Story*), K.M. Weiland, Virginia Tufte, and Brandon Sanderson.
+3. **At Diagnostic Time (Stage 04):** Mechanical regex scanners score lexical tells while checking cross-chapter continuity and N-gram repetition.
 
-## Quick start
+---
 
-```bash
-# scaffold a fresh project in an empty folder
-node "path/to/saga-icm/scripts/saga.js" init
-npm install
+## Live Console Telemetry
+
+Soundboard includes zero-dependency mechanical CLI tools that report transparent project status without requiring an API key:
+
+```
+$ soundboard status
+
+==================================================
+        SAGA-ICM Novel Engineering Console
+==================================================
+
+Book: The Obsidian Threshold
+Genre: Epic Fantasy / Grimdark | Form: Novel (Target: 85,000w)
+
+Pipeline Gate:
+  [✔] 01 Onboarding   — COMPLETE
+  [✔] 02 Planning     — COMPLETE (18 chapters ledgered)
+  [▶] 03 Drafting     — ACTIVE (Chapter 4 in progress)
+  [ ] 04 Diagnostics  — PENDING
+  [ ] 05 Publishing   — LOCKED
+
+Production Ledger:
+  Ch 01  The Ash Gate          2,450w  [PASSED]  Gate: 4/4 checks clear
+  Ch 02  The Salt Road         2,890w  [PASSED]  Gate: 4/4 checks clear
+  Ch 03  Whispers in Iron      2,120w  [AUDITED] Revision playbook active
+  Ch 04  The Broken Seal       1,950w  [DRAFTED] Pack kit: ~736 tokens
+  Ch 05  Council of Knives         0w  [PLANNED] Entities: [Dov, Mara, Citadel]
 ```
 
-Then, **with an agent**: say *"read AGENTS.md and onboard me for a new novel"* — it interviews you in chat, fills the genre bible, and the pipeline proceeds stage by stage (*"run stage 02"*, etc.).
+---
 
-**Without an agent** (terminal + API backend in `.env`):
+## Quickstart: Choose Your Pathway
+
+### Track A: The Creative Author (Recommended)
+You do not need to run terminal commands. Soundboard is designed to be operated by your AI coding assistant:
+
+1. Clone or download this repository.
+2. Open the folder in **Claude Code**, **Antigravity**, **Cursor**, or **Gemini CLI**.
+3. Say in chat:
+   > *"Read AGENTS.md and onboard me for a new novel."*
+4. Your agent will act as your Executive Writing Concierge—interviewing your premise, assembling your world bible, and guiding you stage by stage.
+
+---
+
+### Track B: The Command-Line Developer
+If you prefer direct CLI control or automated scripting:
+
 ```bash
-node scripts/saga.js wizard onboard --blueprint=comfort-scifi
-node scripts/saga.js status        # stage + chapter progress, next action
-node scripts/saga.js audit        # scan drafts for AI prose tells
-node scripts/saga.js continuity   # name-consistency scan across chapters
-node scripts/saga.js compile      # build HTML/EPUB from passed chapters
+# 1. Clone and install (zero runtime dependencies)
+git clone https://github.com/richardelder2/saga-icm.git soundboard
+cd soundboard
+npm test
+
+# 2. Scaffold a clean project in an empty novel folder
+node scripts/soundboard.js init ../my-novel
+cd ../my-novel
+
+# 3. Check status, query canon, or run diagnostics
+node scripts/soundboard.js status
+node scripts/soundboard.js canon query "Mara"
+node scripts/soundboard.js audit stages/03_drafting/output/chapters/ch01.md
+node scripts/soundboard.js compile
 ```
 
-Books are produced chapter-by-chapter: Stage 02 writes a `manuscript.json` production ledger; each chapter cycles draft (03) → audit (04) → passed, with a living **canon** file guarding continuity and a **voice-exemplar kit** preventing style drift between sessions; `compile` (05) builds only gated chapters.
+---
 
-**Multiple projects:** one book = one `init`-scaffolded folder; projects are fully isolated. **Series** share a sibling `series/` folder (series canon, filled genre bible, cross-book trackers) — conventions in `AGENTS.md`. **Upgrading** a project to a newer template: re-run `init` from inside it — outputs, `manuscript.json`, and `.env` are preserved.
+## The 92-Module OKF Craft Bundle
 
-## The authenticity system (what makes this different)
+Soundboard ships with a self-validating, token-disciplined library of **92 narrative craft modules** in `_config/okf_craft/`. Every module adheres to the Open Knowledge Format (OKF):
+- Under 900 tokens / 750 words for minimal context consumption.
+- Tagged with `stages:`, `subtype:`, and `confidence:` frontmatter.
+- Concrete worked examples, formulas, and rubrics preserved intact.
+- Features the universal **Narrative Lexicon Rosetta Stone** mapping *Story Grid*, *Save the Cat!*, *Hero's Journey*, *Truby*, and *Dan Harmon* terminology into unified structural mechanics.
 
-Most "make it sound less AI" advice targets word choice. Research on AI fiction detection (StoryScope, arXiv:2604.03136) shows that's only half the problem: AI stories remain detectable at ~94% accuracy from **narrative structure alone** — explained themes, tidy single-track plots, linear time, uniform resolutions — even after professional style editing. Structure has to be fixed where it's created: at the outline.
+---
 
-SAGA-ICM therefore defends both layers:
+## Repository Architecture
 
-- **Planning time (Stage 02)** — a mandatory Structural Authenticity Pass forces human-typical choices (subplots, nonlinear disclosure, resolution variety, moral ambivalence, escalation contour) and records them in `structure_plan.md`.
-- **Drafting time (Stage 03)** — prose rules govern emotion-mode rotation, sensory budgets, character introductions, and lexical anti-slop.
-- **Edit time (Stage 04)** — `node scripts/saga.js audit` mechanically counts prose tells; `_config/narrative_audit_rubric.md` scores the structural features no scanner can count. Structural failures route back to planning, because line edits can't fix them.
+```
+soundboard/
+├── AGENTS.md               # Canonical instruction contract for all AI agents
+├── _config/                # Layer 3 Context: rules, templates, and 92 craft modules
+│   ├── okf_craft/          # Modular craft engines (Coyne, Truby, Weiland, Genette, Tufte)
+│   ├── templates/          # Machine-validated artifact skeletons
+│   └── narrative_authenticity.md # Structural & prose authenticity rules
+├── stages/                 # The 5-stage pipeline with CONTEXT.md contracts
+│   ├── 01_onboarding/      # World, characters, trope stacks
+│   ├── 02_planning/        # Foolscap, structure plan, scene beats
+│   ├── 03_drafting/        # Chapter prose & voice exemplars
+│   ├── 04_diagnostics_edits/# Audits, continuity scans, revision playbooks
+│   └── 05_publishing/      # Compiled manuscript (HTML/EPUB)
+├── scripts/                # Mechanical zero-dependency CLI (Node.js >= 18)
+│   ├── soundboard.js       # Core console engine (status, pack-chapter, brief, compile)
+│   ├── narrative_audit.js  # Mechanical prose tell scanner
+│   ├── okf_lint.js         # Token budget and metadata validator
+│   └── saga.js             # Canonical forward CLI shim
+└── tests/                  # Cross-platform automated test suite (54+ tests)
+```
 
-The full rule set lives in `_config/narrative_authenticity.md`. Everything is a dial, not a switch: the rules are statistical tendencies of human fiction, and applying them uniformly would create its own machine fingerprint.
+---
 
-Two Claude Code skills ship with the repo (`.claude/skills/`): **narrative-authenticity** (applies the rules during planning/drafting/review) and **structure-humanize** (diagnoses and repairs structural tells in existing drafts).
+## Contributing & Community
 
-## The trope system
+Contributions are welcome! Please ensure:
+1. All changes maintain zero runtime dependencies (`dependencies: {}`).
+2. New or modified OKF modules pass strict linting: `npm run okf-lint -- --strict`.
+3. The full multi-OS test suite passes: `npm test`.
 
-`setup/genre_bibles/` holds fill-in series templates for five commercial genre clusters (romance/romantasy, rom-com, cozy, thriller/mystery, fantasy/SF/horror). Each defines a flagship **trope stack**, a chapter-level beat sheet with obligatory scenes, and continuity trackers. Stage 01 selects and fills a bible with the author; Stage 02 schedules every promised beat in an **obligatory-scene ledger**; Stage 04 audits delivery. Tropes and authenticity coexist by altitude: the trope stack is the reader contract and is never subverted — the authenticity dials roughen the connective tissue around it, which is where AI tells actually live. See `setup/genre_bibles/INDEX.md`.
-
-## Layout
-
-- `_config/` — global style + authenticity rules (Layer 3 context)
-- `setup/` — onboarding questionnaires/blueprints; `genre_bibles/` trope-stack templates
-- `stages/01–05/` — stage contracts and working artifacts
-- `scripts/` — mechanical Node.js CLI (`saga.js`, wizards, `narrative_audit.js`)
-- `.claude/skills/` — portable agent skills
-
-License: MIT
+## License
+MIT License. Created by Richard Elder & Antigravity. Methodology based on *Interpretable Context Methodology* (Van Clief & McDermott, arXiv:2603.16021).

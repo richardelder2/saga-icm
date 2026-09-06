@@ -19,6 +19,20 @@
   "engines": {
     "node": ">=18"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/richardelder2/saga-icm.git"
+  },
+  "keywords": [
+    "ai-writing",
+    "novel-generator",
+    "creative-writing",
+    "claude-code",
+    "antigravity",
+    "interpretable-context-methodology",
+    "open-knowledge-format",
+    "narrative-craft"
+  ],
   "author": "Richard Elder & Antigravity",
   "license": "MIT",
   "dependencies": {}
